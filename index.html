@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zakat Fitrah - LAZMU Masjid Utsman bin Affan</title>
+  <!-- Favicon Logo LAZMU -->
+  <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ">  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- html2canvas (Render Struk PNG Client-Side) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans pb-10">
+
+  <!-- WELCOME MODAL INTERAKTIF (SLIDER) PENGGANTI CAPTCHA -->
+  <div id="welcome-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 relative overflow-hidden border border-slate-100 transform transition-all">
+      
+      <!-- Logo Circle -->
+      <div class="flex justify-center">
+        <div class="w-20 h-20 rounded-full border-2 border-teal-100 bg-teal-50/50 flex items-center justify-center p-1 shadow-inner">
+          <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo LAZMU" class="w-16 h-16 object-contain rounded-full">
+        </div>
+      </div>
+
+      <!-- Title & Slogan -->
+      <div>
+        <h2 id="modal-title" class="text-base font-bold text-teal-800 tracking-wide">Zakat Fitrah Digital</h2>
+        <p id="modal-slogan" class="text-xs text-slate-500 font-medium mt-0.5">LAZMU Masjid Utsman bin Affan</p>
+      </div>
+
+      <!-- Welcome Text -->
+      <p class="text-xs text-slate-600 leading-relaxed px-2">
+        Ahlan wa Sahlan! Selamat datang di layanan Zakat Fitrah mandiri. Tunaikan zakat dengan mudah, cepat, dan transparan.
+      </p>
+
+      <!-- Quote -->
+      <p id="modal-quote" class="text-xs italic font-semibold text-teal-700 bg-teal-50/60 py-2.5 px-3 rounded-xl border border-teal-100">
+        "Menyalurkan Amanah, Menghadirkan Manfaat"
+      </p>
+
+      <!-- Slider Section (Anti-Bot & Human Verification) -->
+      <div class="pt-2">
+        <p class="text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Geser ke kanan untuk mulai</p>
+        
+        <!-- Slider Track -->
+        <div id="slider-track" class="relative w-full h-12 bg-slate-100 rounded-full p-1 flex items-center select-none border border-slate-200 overflow-hidden shadow-inner">
+          <span id="slider-text" class="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-slate-400 tracking-widest pl-6 pointer-events-none transition-opacity">GESER UNTUK MULAI &rarr;</span>
+          
+          <!-- Slider Knob (Tombol Geser) -->
+          <div id="slider-knob" class="absolute left-1 w-10 h-10 bg-teal-700 hover:bg-teal-800 text-white rounded-full flex items-center justify-center shadow-md cursor-pointer transition-colors z-10 active:scale-95">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+          </div>
+          
+          <!-- Fill Bar Background -->
+          <div id="slider-fill" class="absolute left-0 top-0 bottom-0 bg-teal-100/60 rounded-l-full pointer-events-none transition-all duration-75" style="width: 40px;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="max-w-md mx-auto mt-4 p-4">
+    
+    <!-- HEADER -->
+    <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 text-center mb-4">
+      <div class="flex justify-center mb-3">
+        <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo LAZMU" class="w-16 h-16 object-contain rounded-full shadow-sm border border-slate-100 bg-white p-1">
+      </div>
+      <h1 class="text-sm font-bold text-teal-800" id="txtNamaLembaga">LAZMU Masjid Utsman bin Affan</h1>
+      <p class="text-[11px] text-gray-500 mt-0.5 font-medium">#Menyalurkan Amanah, Menghadirkan Manfaat</p>
+      <p class="text-[10px] text-gray-400 mt-2 px-2 leading-relaxed border-t border-slate-100 pt-2">
+        Masjid Utsman bin 'Affan, The Green City View Blok K-1, Kel. Jatihandap, Kec. Mandalajati, Kota Bandung, Jawa Barat
+      </p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- FORM 1: ZAKAT FITRAH ONLINE (QRIS)         -->
+    <!-- ========================================== -->
+    <div id="sectionOnline" class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200">
+      <h2 class="text-xs font-bold text-teal-800 uppercase mb-3 border-b pb-2">Kalkulator Zakat Fitrah Mandiri</h2>
+
+      <!-- Nama Kepala Keluarga -->
+      <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Kepala Keluarga / Muzakki</label>
+      <input type="text" id="onlineNama" placeholder="Contoh: Bp. Usman" 
+        class="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl mb-3 focus:ring-2 focus:ring-teal-500 outline-none uppercase">
+
+      <!-- Alamat -->
+      <label class="block text-xs font-semibold text-gray-700 mb-1">Alamat / RT-RW</label>
+      <input type="text" id="onlineAlamat" placeholder="Contoh: GCV Blok K1" 
+        class="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl mb-3 focus:ring-2 focus:ring-teal-500 outline-none uppercase">
+
+      <!-- Jumlah Jiwa -->
+      <label class="block text-xs font-semibold text-gray-700 mb-1">Jumlah Jiwa yang Dizakatkan</label>
+      <input type="number" id="onlineJiwa" value="1" min="1" oninput="hitungTotalZakat()" 
+        class="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl mb-3 focus:ring-2 focus:ring-teal-500 outline-none font-bold text-teal-800">
+
+      <!-- Pilihan Standar / Custom Harga Beras -->
+      <label class="block text-xs font-semibold text-gray-700 mb-1">Pilihan Standar Zakat (2,5 Kg / Jiwa)</label>
+      <div class="space-y-2 mb-3">
+        <label class="flex items-center gap-2 p-2.5 border rounded-xl border-teal-600 bg-teal-50 cursor-pointer text-xs font-medium text-slate-700">
+          <input type="radio" name="opsiHarga" value="reguler" checked onclick="toggleHargaBeras()" class="text-teal-600 focus:ring-teal-500">
+          <span id="labelStandarReguler">Standar Reguler (Rp 45.000 / jiwa)</span>
+        </label>
+        <label class="flex items-center gap-2 p-2.5 border rounded-xl border-slate-200 bg-white cursor-pointer text-xs font-medium text-slate-700">
+          <input type="radio" name="opsiHarga" value="custom" onclick="toggleHargaBeras()" class="text-teal-600 focus:ring-teal-500">
+          Custom Harga Beras Harian (Nominal per jiwa)
+        </label>
+      </div>
+
+      <!-- Input Custom Harga Jika Dipilih -->
+      <div id="wrapperCustomHarga" class="hidden mb-3">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-gray-400">Rp</span>
+          <input type="text" id="onlineCustomHarga" placeholder="Masukkan harga beras per jiwa..." 
+            oninput="formatRupiahMasking(this); hitungTotalZakat();"
+            class="w-full pl-9 pr-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+      </div>
+
+      <!-- Infak / Sedekah Opsional -->
+      <label class="block text-xs font-semibold text-gray-700 mb-1">Infak / Sedekah <span class="text-gray-400 font-normal">(Opsional)</span></label>
+      <div class="relative mb-4">
+        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-gray-400">Rp</span>
+        <input type="text" id="onlineInfak" placeholder="0" value="0" 
+          oninput="formatRupiahMasking(this); hitungTotalZakat();"
+          class="w-full pl-9 pr-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+      </div>
+
+      <!-- Kotak Ringkasan Total -->
+      <div class="bg-teal-50 border border-teal-200 rounded-xl p-3.5 mb-4 text-xs space-y-1">
+        <div class="flex justify-between text-slate-600"><span>Total Zakat Fitrah:</span><span id="txtRincianZakat" class="font-bold">Rp 45.000</span></div>
+        <div class="flex justify-between text-slate-600"><span>Infak Tambahan:</span><span id="txtRincianInfak" class="font-bold">Rp 0</span></div>
+        <div class="border-t border-teal-200 pt-1.5 flex justify-between text-teal-900 font-bold text-sm">
+          <span>Total Pembayaran:</span><span id="txtRincianTotal" class="text-teal-700">Rp 45.000</span>
+        </div>
+      </div>
+
+      <!-- Tombol Lanjut ke QRIS + Spinner -->
+      <button type="button" onclick="prosesLanjutQrisOnline()" id="btnSubmitOnline"
+        class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5">
+        Lanjut ke QRIS
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- STEP QRIS & STRUK ONLINE DISPLAY           -->
+    <!-- ========================================== -->
+    <div id="stepQris" class="hidden bg-white rounded-2xl shadow-sm p-5 border border-slate-200 text-center">
+      
+      <!-- Countdown Timer (3 Menit) -->
+      <div class="mb-3 text-center bg-red-50 border border-red-200 py-1.5 px-4 rounded-xl inline-block shadow-sm">
+        <span class="text-xs font-bold text-red-600">Berlaku hingga <span id="timerCountdown">03:00</span></span>
+      </div>
+
+      <!-- Kartu Struk -->
+      <div id="kartuStruk" class="p-4 bg-slate-50 border border-slate-200 rounded-xl mb-4 text-left">
+        <div class="text-center border-b pb-3 mb-3 border-slate-200">
+          <h2 class="font-bold text-teal-800 text-base">Zakat Fitrah Digital</h2>
+          <p class="text-[11px] text-gray-500">LAZMU Masjid Utsman bin Affan</p>
+        </div>
+        
+        <div class="text-xs space-y-1.5 text-gray-700">
+          <div class="flex justify-between"><span>ID Transaksi:</span><span class="font-bold" id="strukId">-</span></div>
+          <div class="flex justify-between"><span>Tanggal:</span><span id="strukTanggal">-</span></div>
+          <div class="flex justify-between"><span>Muzakki:</span><span class="font-bold" id="strukNama">-</span></div>
+          <div class="flex justify-between"><span>Jumlah Jiwa:</span><span id="strukJiwa">-</span></div>
+          <div class="flex justify-between"><span>Zakat Fitrah:</span><span id="strukZakat">-</span></div>
+          <div class="flex justify-between"><span>Infak/Sedekah:</span><span id="strukInfak">-</span></div>
+          <div class="flex justify-between border-t border-slate-200 pt-1.5 mt-1 font-bold text-teal-900">
+            <span>Total Bayar:</span><span class="text-teal-700 text-sm" id="strukNominal">-</span>
+          </div>
+        </div>
+
+        <!-- Container QR Code -->
+        <div class="flex flex-col items-center justify-center mt-4 pt-3 border-t border-slate-200">
+          <div id="qrisImageContainer" class="p-2 bg-white rounded-lg border border-slate-200 flex flex-col items-center w-52">
+            <!-- Render QRIS via Canvas dinamis -->
+          </div>
+          <div class="w-52 mt-2 text-teal-700 text-[11px] font-bold py-1.5 text-center">
+            Scan langsung atau Unduh QRIS untuk M-Banking / E-Wallet
+          </div>
+        </div>
+      </div>
+
+      <!-- Tombol Unduh QRIS -->
+      <div class="flex justify-center mb-3">
+        <button type="button" onclick="unduhQrisSaja()" 
+          class="w-52 bg-white hover:bg-slate-50 text-teal-700 border border-teal-600 text-xs font-semibold py-2 rounded-xl flex items-center justify-center gap-1.5 transition shadow-sm cursor-pointer">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 16L7 11H10V4H14V11H17L12 16ZM4 18H20V20H4V18Z"/></svg>
+          Unduh Gambar QRIS
+        </button>
+      </div>
+
+      <!-- Tombol Sudah Transfer & Konfirmasi ke WA Admin -->
+      <button type="button" onclick="selesaiTransaksiOnline()" id="btnSelesaiOnline"
+        class="w-full bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold py-3 rounded-xl mb-3 shadow-md flex items-center justify-center gap-1.5 cursor-pointer">
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+        Sudah Transfer & Konfirmasi ke WA Admin
+      </button>
+
+      <button type="button" onclick="kembaliKeFormOnline()" 
+        class="w-full bg-white hover:bg-slate-50 text-teal-700 border border-teal-600 font-semibold py-2.5 rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5">
+        Kembali / Ubah Data
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- STEP TERIMA KASIH                          -->
+    <!-- ========================================== -->
+    <div id="stepThankYou" class="hidden bg-white rounded-2xl shadow-sm p-6 border border-slate-200 text-center space-y-3">
+      <div class="flex justify-center mb-1">
+        <svg class="w-12 h-12 text-teal-600" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-teal-800 mb-1">Jazakumullahu Khairan</h2>
+      <p class="text-xs text-gray-600 mb-4" id="txtSuksesInfo">Zakat fitrah Anda telah tercatat dalam sistem.</p>
+      
+      <div id="containerTombolSelesai" class="space-y-2">
+        <!-- Render dinamis tombol aksi -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- POP-UP CUSTOM ALERT -->
+  <div id="customAlertModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="tutupAlert()"></div>
+    <div class="bg-white rounded-2xl shadow-xl z-10 w-full max-w-xs p-6 text-center transform transition-all border border-slate-100">
+      <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-amber-100 mb-4 shadow-sm border border-amber-200">
+        <svg class="h-7 w-7 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-slate-800 mb-2">Peringatan</h3>
+      <p id="customAlertPesan" class="text-sm text-slate-600 mb-6 leading-relaxed">Pesan error.</p>
+      <button type="button" onclick="tutupAlert()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-md cursor-pointer">
+        Mengerti
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwubLOk1tpYRZOo2lQYal34_TaAtCQ0SevaOUi3A7jo9AmbohfTbNVS-2P-fHOzYIKr/exec";
+
+    let appConfig = {};
+    let currentTransaction = null;
+    let generatedQrisDataUrl = "";
+    let qrisTimerInterval = null;
+    let timeLeft = 180;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadAppConfig();
+      initSlider();
+    });
+
+    // --- INISIALISASI SLIDER PEMBUKA ---
+    function initSlider() {
+      const track = document.getElementById('slider-track');
+      const knob = document.getElementById('slider-knob');
+      const fill = document.getElementById('slider-fill');
+      const sliderText = document.getElementById('slider-text');
+      
+      if (!track || !knob) return;
+
+      let isDragging = false;
+      let startX = 0;
+      let maxTranslate = 0;
+
+      const updateMetrics = () => {
+        maxTranslate = track.clientWidth - knob.clientWidth - 8; 
+      };
+      updateMetrics();
+      window.addEventListener('resize', updateMetrics);
+
+      const dragStart = (e) => {
+        isDragging = true;
+        startX = e.clientX || e.touches[0].clientX;
+        sliderText.style.opacity = '0.3';
+      };
+
+      const dragMove = (e) => {
+        if (!isDragging) return;
+        const currentX = e.clientX || e.touches[0].clientX;
+        let diff = currentX - startX;
+        if (diff < 0) diff = 0;
+        if (diff > maxTranslate) diff = maxTranslate;
+        
+        knob.style.transform = `translateX(${diff}px)`;
+        fill.style.width = `${diff + 40}px`;
+
+        if (diff >= maxTranslate - 10) {
+          isDragging = false;
+          successSlider();
+        }
+      };
+
+      const dragEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        knob.style.transition = 'transform 0.3s ease';
+        fill.style.transition = 'width 0.3s ease';
+        knob.style.transform = 'translateX(0px)';
+        fill.style.width = '40px';
+        sliderText.style.opacity = '1';
+        setTimeout(() => {
+          knob.style.transition = '';
+          fill.style.transition = '';
+        }, 300);
+      };
+
+      knob.addEventListener('mousedown', dragStart);
+      window.addEventListener('mousemove', dragMove);
+      window.addEventListener('mouseup', dragEnd);
+
+      knob.addEventListener('touchstart', dragStart);
+      window.addEventListener('touchmove', dragMove);
+      window.addEventListener('touchend', dragEnd);
+    }
+
+    function successSlider() {
+      const track = document.getElementById('slider-track');
+      const knob = document.getElementById('slider-knob');
+      const fill = document.getElementById('slider-fill');
+      const sliderText = document.getElementById('slider-text');
+      const maxTranslate = track.clientWidth - knob.clientWidth - 8;
+
+      knob.style.transition = 'transform 0.2s ease';
+      fill.style.transition = 'width 0.2s ease';
+      knob.style.transform = `translateX(${maxTranslate}px)`;
+      fill.style.width = `${track.clientWidth}px`;
+      
+      sliderText.innerText = "BERHASIL";
+      sliderText.style.opacity = '1';
+      sliderText.style.color = '#038b86';
+      
+      setTimeout(() => {
+        const modal = document.getElementById('welcome-modal');
+        modal.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        modal.style.opacity = '0';
+        modal.style.transform = 'scale(1.05)';
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 400);
+      }, 300);
+    }
+
+    // --- CACHE LOCALSTORAGE CONFIG (TTL 1 JAM) + AUTO RETRY ---
+    async function fetchWithRetry(url, options = {}, retries = 3, delay = 1500) {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const res = await fetch(url, options);
+          const text = await res.text();
+          if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+            throw new Error("Server Google sedang cold start / 404");
+          }
+          return JSON.parse(text);
+        } catch (err) {
+          if (i === retries - 1) throw err;
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+
+    async function loadAppConfig() {
+      const CACHE_KEY = "lazmu_zakat_config_cache";
+      const TIME_KEY = "lazmu_zakat_config_time";
+      const ONE_HOUR = 60 * 60 * 1000;
+
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      const cachedTime = localStorage.getItem(TIME_KEY);
+      const now = new Date().getTime();
+
+      if (cachedData && cachedTime && (now - cachedTime < ONE_HOUR)) {
+        try {
+          appConfig = JSON.parse(cachedData);
+          applyConfigToUI();
+          return;
+        } catch (e) {
+          console.error("Gagal baca cache config", e);
+        }
+      }
+
+      try {
+        const data = await fetchWithRetry(`${API_URL}?action=getConfig`);
+        if (data.status === "success") {
+          appConfig = data.config;
+          applyConfigToUI();
+          localStorage.setItem(CACHE_KEY, JSON.stringify(appConfig));
+          localStorage.setItem(TIME_KEY, now);
+        }
+      } catch (err) {
+        console.error("Gagal load config dari server", err);
+        if (cachedData) {
+          appConfig = JSON.parse(cachedData);
+          applyConfigToUI();
+        }
+      }
+    }
+
+    function applyConfigToUI() {
+      if (appConfig.NAMA_LEMBAGA) {
+        document.getElementById("txtNamaLembaga").innerText = appConfig.NAMA_LEMBAGA;
+        document.getElementById("modal-slogan").innerText = appConfig.NAMA_LEMBAGA;
+      }
+      if (appConfig.STANDAR_HARGA_BERAS) {
+        const hargaDef = parseInt(appConfig.STANDAR_HARGA_BERAS, 10);
+        document.getElementById("labelStandarReguler").innerText = `Standar Reguler (Rp ${hargaDef.toLocaleString('id-ID')} / jiwa)`;
+        hitungTotalZakat();
+      }
+    }
+
+    function toggleHargaBeras() {
+      const isCustom = document.querySelector('input[name="opsiHarga"]:checked').value === 'custom';
+      const wrapper = document.getElementById("wrapperCustomHarga");
+      if (isCustom) {
+        wrapper.classList.remove("hidden");
+      } else {
+        wrapper.classList.add("hidden");
+      }
+      hitungTotalZakat();
+    }
+
+    function hitungTotalZakat() {
+      const jiwa = parseInt(document.getElementById("onlineJiwa").value, 10) || 1;
+      const isCustom = document.querySelector('input[name="opsiHarga"]:checked').value === 'custom';
+      
+      let hargaSatuan = 45000;
+      if (appConfig.STANDAR_HARGA_BERAS) {
+        hargaSatuan = parseInt(appConfig.STANDAR_HARGA_BERAS, 10);
+      }
+
+      if (isCustom) {
+        const customVal = parseInt(document.getElementById("onlineCustomHarga").value.replace(/\./g, ''), 10);
+        if (customVal && customVal > 0) hargaSatuan = customVal;
+      }
+
+      const totalZakat = jiwa * hargaSatuan;
+      const infak = parseInt(document.getElementById("onlineInfak").value.replace(/\./g, ''), 10) || 0;
+      const totalBayar = totalZakat + infak;
+
+      document.getElementById("txtRincianZakat").innerText = `Rp ${totalZakat.toLocaleString('id-ID')}`;
+      document.getElementById("txtRincianInfak").innerText = `Rp ${infak.toLocaleString('id-ID')}`;
+      document.getElementById("txtRincianTotal").innerText = `Rp ${totalBayar.toLocaleString('id-ID')}`;
+    }
+
+    function formatRupiahMasking(input) {
+      let angka = input.value.replace(/[^,\d]/g, '').toString();
+      let split = angka.split(',');
+      let sisa = split[0].length % 3;
+      let rupiah = split[0].substr(0, sisa);
+      let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+      if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+      }
+      input.value = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+    }
+
+    function tampilkanAlert(pesan) {
+      document.getElementById('customAlertPesan').innerText = pesan;
+      document.getElementById('customAlertModal').classList.remove('hidden');
+    }
+    function tutupAlert() {
+      document.getElementById('customAlertModal').classList.add('hidden');
+    }
+
+    // --- PROSES ONLINE: QRIS DINAMIS (DENGAN UPPERCASE OTOMATIS) ---
+    async function prosesLanjutQrisOnline() {
+      const nama = document.getElementById("onlineNama").value.trim().toUpperCase();
+      const alamat = document.getElementById("onlineAlamat").value.trim().toUpperCase();
+      const jiwa = parseInt(document.getElementById("onlineJiwa").value, 10) || 1;
+
+      if (!nama || !alamat) {
+        tampilkanAlert("Mohon isi Nama Kepala Keluarga dan Alamat terlebih dahulu.");
+        return;
+      }
+
+      const isCustom = document.querySelector('input[name="opsiHarga"]:checked').value === 'custom';
+      let hargaSatuan = parseInt(appConfig.STANDAR_HARGA_BERAS, 10) || 45000;
+      if (isCustom) {
+        const customVal = parseInt(document.getElementById("onlineCustomHarga").value.replace(/\./g, ''), 10);
+        if (customVal && customVal > 0) hargaSatuan = customVal;
+      }
+
+      const totalZakat = jiwa * hargaSatuan;
+      const infak = parseInt(document.getElementById("onlineInfak").value.replace(/\./g, ''), 10) || 0;
+      const totalBayar = totalZakat + infak;
+
+      const btn = document.getElementById("btnSubmitOnline");
+      btn.disabled = true;
+      btn.innerHTML = `
+        <svg class="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Memproses QRIS...
+      `;
+
+      try {
+        const payload = {
+          action: "buatQris",
+          secretCode: "z9X!mQ7#pL2$vW8@kX4%nR3&bT6*yH5",
+          nominal: totalBayar
+        };
+
+        const data = await fetchWithRetry(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        if (data.status === "success") {
+          currentTransaction = {
+            ...data,
+            namaMuzakki: nama,
+            alamat: alamat,
+            jumlahJiwa: jiwa,
+            jenisBayar: isCustom ? "Uang (Custom)" : "Uang (Reguler)",
+            hargaSatuan: hargaSatuan,
+            totalZakat: totalZakat,
+            infakOpsional: infak,
+            totalBayar: totalBayar
+          };
+
+          tampilkanQrisDanStruk(currentTransaction);
+          startQrisCountdown();
+        } else {
+          tampilkanAlert("Perhatian: " + data.message);
+        }
+      } catch (err) {
+        tampilkanAlert("Pesan Sistem: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Lanjut ke QRIS";
+      }
+    }
+
+    function tampilkanQrisDanStruk(data) {
+      generatedQrisDataUrl = "";
+
+      document.getElementById("sectionOnline").classList.add("hidden");
+      document.getElementById("stepQris").classList.remove("hidden");
+
+      document.getElementById("strukId").innerText = data.idTransaksi;
+      document.getElementById("strukTanggal").innerText = data.timestamp;
+      document.getElementById("strukNama").innerText = data.namaMuzakki;
+      document.getElementById("strukJiwa").innerText = `${data.jumlahJiwa} Jiwa`;
+      document.getElementById("strukZakat").innerText = `Rp ${data.totalZakat.toLocaleString('id-ID')}`;
+      document.getElementById("strukInfak").innerText = `Rp ${data.infakOpsional.toLocaleString('id-ID')}`;
+      document.getElementById("strukNominal").innerText = `Rp ${data.totalBayar.toLocaleString('id-ID')}`;
+
+      const container = document.getElementById("qrisImageContainer");
+      container.innerHTML = '<div class="text-[10px] text-gray-400 py-6">Memuat QRIS & Logo...</div>';
+
+      const qrisApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(data.qrisString)}`;
+      
+      const imgQr = new Image();
+      imgQr.crossOrigin = "anonymous";
+      imgQr.src = qrisApiUrl;
+
+      const imgQrisLogo = new Image();
+      imgQrisLogo.crossOrigin = "anonymous";
+      imgQrisLogo.src = "https://lh3.googleusercontent.com/d/1uti69epqwFC7j-hqGNU53CvUynxCYzbP";
+
+      const imgGpnLogo = new Image();
+      imgGpnLogo.crossOrigin = "anonymous";
+      imgGpnLogo.src = "https://lh3.googleusercontent.com/d/19PZ5xEWRsnNyUpafSSuY4qOwraLFyGAQ";
+
+      let loadedCount = 0;
+      const checkAllLoaded = () => {
+        loadedCount++;
+        if (loadedCount === 3) {
+          const canvas = document.createElement('canvas');
+          canvas.width = 300;
+          canvas.height = 380; 
+          const ctx = canvas.getContext('2d');
+          
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = "#038b86";
+          ctx.font = "bold 15px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("LAZMU", 150, 25);
+
+          if (imgQrisLogo.complete && imgQrisLogo.naturalWidth > 0) {
+            ctx.drawImage(imgQrisLogo, 15, 38, 70, 26);
+          }
+          if (imgGpnLogo.complete && imgGpnLogo.naturalWidth > 0) {
+            const gpnAspect = imgGpnLogo.naturalWidth / imgGpnLogo.naturalHeight;
+            const gpnH = 28; 
+            const gpnW = gpnH * gpnAspect; 
+            ctx.drawImage(imgGpnLogo, 285 - gpnW, 37, gpnW, gpnH);
+          }
+
+          ctx.strokeStyle = "#e2e8f0";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(15, 75);
+          ctx.lineTo(285, 75);
+          ctx.stroke();
+
+          if (imgQr.complete && imgQr.naturalWidth > 0) {
+            ctx.drawImage(imgQr, 0, 80, 300, 300);
+          }
+
+          generatedQrisDataUrl = canvas.toDataURL("image/png");
+          container.innerHTML = `<img src="${generatedQrisDataUrl}" alt="QRIS Zakat" class="w-48 h-auto object-contain shadow-sm rounded">`;
+        }
+      };
+
+      imgQr.onload = checkAllLoaded;
+      imgQrisLogo.onload = checkAllLoaded;
+      imgGpnLogo.onload = checkAllLoaded;
+
+      imgQr.onerror = checkAllLoaded;
+      imgQrisLogo.onerror = checkAllLoaded;
+      imgGpnLogo.onerror = checkAllLoaded;
+    }
+
+    function startQrisCountdown() {
+      clearInterval(qrisTimerInterval);
+      timeLeft = 180;
+      updateTimerDisplay();
+      qrisTimerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          clearInterval(qrisTimerInterval);
+          tampilkanAlert("Waktu QRIS telah habis. Silakan buat transaksi ulang.");
+          kembaliKeFormOnline();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timeLeft / 60);
+      const s = timeLeft % 60;
+      const el = document.getElementById("timerCountdown");
+      if (el) el.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function unduhQrisSaja() {
+      if (!generatedQrisDataUrl) return;
+      const link = document.createElement("a");
+      link.download = `QRIS_Zakat_${currentTransaction.idTransaksi}.png`;
+      link.href = generatedQrisDataUrl;
+      link.click();
+    }
+
+    function kembaliKeFormOnline() {
+      clearInterval(qrisTimerInterval);
+      document.getElementById("stepQris").classList.add("hidden");
+      document.getElementById("sectionOnline").classList.remove("hidden");
+    }
+
+    async function selesaiTransaksiOnline() {
+      clearInterval(qrisTimerInterval);
+      const btn = document.getElementById("btnSelesaiOnline");
+      btn.disabled = true;
+      btn.innerHTML = `
+        <svg class="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Menyimpan Transaksi...
+      `;
+
+      try {
+        const payload = {
+          action: "simpanTransaksi",
+          secretCode: "z9X!mQ7#pL2$vW8@kX4%nR3&bT6*yH5",
+          ...currentTransaction
+        };
+
+        await fetchWithRetry(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.error("Gagal simpan:", err);
+      }
+
+      document.getElementById("stepQris").classList.add("hidden");
+      document.getElementById("stepThankYou").classList.remove("hidden");
+      document.getElementById("txtSuksesInfo").innerText = "Zakat fitrah online Anda berhasil dicatat. Silakan lakukan konfirmasi ke WhatsApp Admin.";
+
+      const noWa = currentTransaction.noWaAdmin || "628131626940";
+      
+      const pesanWa = `Assalamu'alaikum Admin LAZMU, mohon konfirmasi Zakat Fitrah:\n\n` +
+        `• *ID Transaksi:* ${currentTransaction.idTransaksi}\n` +
+        `• *Nama:* ${currentTransaction.namaMuzakki}\n` +
+        `• *Alamat:* ${currentTransaction.alamat}\n` +
+        `• *Jumlah Jiwa:* ${currentTransaction.jumlahJiwa}\n` +
+        `• *Zakat Fitrah:* Rp ${currentTransaction.totalZakat.toLocaleString('id-ID')}\n` +
+        `• *Infak/Sedekah:* Rp ${currentTransaction.infakOpsional.toLocaleString('id-ID')}\n` +
+        `• *Total Bayar:* Rp ${currentTransaction.totalBayar.toLocaleString('id-ID')}\n\n` +
+        `Jazakumullahu khairan.`;
+        
+      const urlWa = `https://wa.me/${noWa}?text=${encodeURIComponent(pesanWa)}`;
+
+      document.getElementById("containerTombolSelesai").innerHTML = `
+        <a href="${urlWa}" target="_blank" class="block w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3.5 rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2">
+          Konfirmasi ke WhatsApp Admin
+        </a>
+        <button type="button" onclick="location.reload()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl text-xs transition cursor-pointer">
+          Selesai / Zakat Lagi
+        </button>
+      `;
+    }
+  </script>
+</body>
+</html>

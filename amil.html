@@ -64,7 +64,7 @@
       <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-1 space-y-3">
         <h2 class="text-xs font-bold text-teal-800 uppercase border-b pb-2">Input Zakat Offline (Posko)</h2>
 
-        <!-- Petugas Amil (Dropdown otomatis dari sheet) -->
+        <!-- Petugas Amil -->
         <label class="block text-xs font-semibold text-gray-700 mb-1">Petugas Amil yang Bertugas</label>
         <select id="inputPetugasAmil" class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-2 focus:ring-2 focus:ring-teal-500 outline-none bg-white">
           <!-- Render dinamis list amil -->
@@ -93,7 +93,7 @@
           <option value="Beras (Langsung)">Beras (2,5 Kg / jiwa)</option>
         </select>
 
-        <!-- Wrapper Harga Custom jika dipilih -->
+        <!-- Wrapper Harga Custom -->
         <div id="wrapperCustomOffline" class="hidden mb-2">
           <label class="block text-xs font-semibold text-gray-700 mb-1">Harga Beras per Jiwa (Rp)</label>
           <input type="text" id="offlineCustomHarga" placeholder="Contoh: 40000" oninput="formatRupiahMasking(this); hitungTotalOffline();"
@@ -120,8 +120,8 @@
       <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-2 space-y-4">
         <h2 class="text-xs font-bold text-teal-800 uppercase border-b pb-2">Rekapitulasi & Riwayat Transaksi</h2>
 
-        <!-- Kotak Ringkasan Statistik -->
-        <div class="grid grid-cols-3 gap-2 text-center">
+        <!-- Kotak Ringkasan Statistik (4 Kolom) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
           <div class="bg-slate-50 border rounded-xl p-2.5">
             <p class="text-[10px] text-slate-400 font-semibold uppercase">Total Jiwa</p>
             <p id="statTotalJiwa" class="text-base font-bold text-teal-800">0</p>
@@ -129,6 +129,10 @@
           <div class="bg-slate-50 border rounded-xl p-2.5">
             <p class="text-[10px] text-slate-400 font-semibold uppercase">Total Uang (Rp)</p>
             <p id="statTotalUang" class="text-xs font-bold text-teal-800 mt-1">Rp 0</p>
+          </div>
+          <div class="bg-slate-50 border rounded-xl p-2.5">
+            <p class="text-[10px] text-slate-400 font-semibold uppercase">Total Beras</p>
+            <p id="statTotalBeras" class="text-xs font-bold text-teal-800 mt-1">0 Kg</p>
           </div>
           <div class="bg-slate-50 border rounded-xl p-2.5">
             <p class="text-[10px] text-slate-400 font-semibold uppercase">Total Infak</p>
@@ -318,6 +322,7 @@
     function renderTabelDanStatistik(listData) {
       let totalJiwaAll = 0;
       let totalUangAll = 0;
+      let totalBerasAll = 0;
       let totalInfakAll = 0;
 
       const tbody = document.getElementById("tabelTransaksiBody");
@@ -325,7 +330,7 @@
 
       if (listData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data transaksi tercatat.</td></tr>`;
-        updateStatistikUI(0, 0, 0);
+        updateStatistikUI(0, 0, 0, 0);
         return;
       }
 
@@ -343,8 +348,25 @@
         const status = row[11] || "-";
 
         totalJiwaAll += jiwa;
-        totalUangAll += totalBayar;
         totalInfakAll += infak;
+
+        let infoBayarHtml = "";
+        if (jenis.includes("Beras")) {
+          const jumlahKg = jiwa * 2.5;
+          totalBerasAll += jumlahKg;
+          totalUangAll += infak; 
+          
+          infoBayarHtml = `
+            <span class="block font-bold text-teal-900">${jenis} (${jumlahKg} Kg)</span>
+            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block">Infak: Rp ${infak.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block">Tanpa Infak</span>`}
+          `;
+        } else {
+          totalUangAll += totalBayar;
+          infoBayarHtml = `
+            <span class="block">${jenis}</span>
+            <span class="font-bold text-teal-700">Rp ${totalBayar.toLocaleString('id-ID')}</span>
+          `;
+        }
 
         const tr = document.createElement("tr");
         tr.className = "hover:bg-slate-50 transition";
@@ -359,8 +381,7 @@
           </td>
           <td class="p-2 border-b border-slate-100 font-bold text-center">${jiwa} Jiwa</td>
           <td class="p-2 border-b border-slate-100">
-            <span class="block">${jenis}</span>
-            <span class="font-bold text-teal-700">Rp ${totalBayar.toLocaleString('id-ID')}</span>
+            ${infoBayarHtml}
           </td>
           <td class="p-2 border-b border-slate-100 text-slate-600">${amil}</td>
           <td class="p-2 border-b border-slate-100">
@@ -370,12 +391,13 @@
         tbody.appendChild(tr);
       }
 
-      updateStatistikUI(totalJiwaAll, totalUangAll, totalInfakAll);
+      updateStatistikUI(totalJiwaAll, totalUangAll, totalBerasAll, totalInfakAll);
     }
 
-    function updateStatistikUI(jiwa, uang, infak) {
+    function updateStatistikUI(jiwa, uang, beras, infak) {
       document.getElementById("statTotalJiwa").innerText = jiwa;
       document.getElementById("statTotalUang").innerText = `Rp ${uang.toLocaleString('id-ID')}`;
+      document.getElementById("statTotalBeras").innerText = `${beras} Kg`;
       document.getElementById("statTotalInfak").innerText = `Rp ${infak.toLocaleString('id-ID')}`;
     }
 
@@ -452,8 +474,6 @@
           document.getElementById("offlineJiwa").value = "1";
           document.getElementById("offlineInfak").value = "";
           hitungTotalOffline();
-          
-          // Refresh ulang data tabel otomatis
           loadAmilDashboardData();
         } else {
           tampilkanAlert("Gagal: " + result.message);

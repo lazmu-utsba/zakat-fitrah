@@ -39,7 +39,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- DASHBOARD UTAMA AMIL (TERSEMBUNYI SAAT LOGIN)-->
+  <!-- DASHBOARD UTAMA AMIL                       -->
   <!-- ========================================== -->
   <div id="dashboardAmil" class="hidden max-w-4xl mx-auto mt-4 p-4 space-y-4">
     
@@ -182,7 +182,6 @@
     let globalConfig = {};
     let semuaTransaksiCache = [];
 
-    // Fungsi Login Amil
     async function prosesLoginAmil() {
       const pass = document.getElementById("inputPasswordAmil").value.trim();
       if (!pass) {
@@ -207,11 +206,9 @@
         const data = await res.json();
 
         if (data.status === "success") {
-          // Sembunyikan modal login, tampilkan dashboard
           document.getElementById("loginModal").classList.add("hidden");
           document.getElementById("dashboardAmil").classList.remove("hidden");
           
-          // Populate Dropdown Petugas Amil
           const selectAmil = document.getElementById("inputPetugasAmil");
           selectAmil.innerHTML = "";
           data.daftarAmil.forEach(nama => {
@@ -221,7 +218,6 @@
             selectAmil.appendChild(opt);
           });
 
-          // Load data config & transaksi
           loadAmilDashboardData();
         } else {
           tampilkanAlert(data.message || "Password salah!");
@@ -275,7 +271,7 @@
         const custom = parseInt(document.getElementById("offlineCustomHarga").value.replace(/\./g, ''), 10);
         if (custom && custom > 0) hargaSatuan = custom;
       } else if (jenis === "Beras (Langsung)") {
-        hargaSatuan = 0; // Beras fisik
+        hargaSatuan = 0;
       }
 
       const totalZakat = jenis === "Beras (Langsung)" ? 0 : (jiwa * hargaSatuan);
@@ -301,16 +297,97 @@
 
     async function loadAmilDashboardData() {
       try {
-        const res = await fetch(`${API_URL}?action=getConfig`);
-        const data = await res.json();
-        if (data.status === "success") {
-          globalConfig = data.config;
+        const resConfig = await fetch(`${API_URL}?action=getConfig`);
+        const dataConfig = await resConfig.json();
+        if (dataConfig.status === "success") {
+          globalConfig = dataConfig.config;
           hitungTotalOffline();
         }
+
+        const resTrans = await fetch(`${API_URL}?action=getTransaksi`);
+        const dataTrans = await resTrans.json();
+        if (dataTrans.status === "success") {
+          semuaTransaksiCache = dataTrans.data || [];
+          renderTabelDanStatistik(semuaTransaksiCache);
+        }
       } catch (e) {
-        console.error("Gagal load config", e);
+        console.error("Gagal load data dashboard", e);
       }
-      // Catatan: Untuk tabel rekap transaksi live dari sheet bisa ditarik lewat doGet tambahan atau endpoint list transaksi
+    }
+
+    function renderTabelDanStatistik(listData) {
+      let totalJiwaAll = 0;
+      let totalUangAll = 0;
+      let totalInfakAll = 0;
+
+      const tbody = document.getElementById("tabelTransaksiBody");
+      tbody.innerHTML = "";
+
+      if (listData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data transaksi tercatat.</td></tr>`;
+        updateStatistikUI(0, 0, 0);
+        return;
+      }
+
+      for (let i = listData.length - 1; i >= 0; i--) {
+        const row = listData[i];
+        const waktu = row[0] || "-";
+        const idTx = row[1] || "-";
+        const nama = row[2] || "-";
+        const alamat = row[3] || "-";
+        const jiwa = parseInt(row[4], 10) || 0;
+        const jenis = row[5] || "-";
+        const totalBayar = parseInt(row[9], 10) || 0;
+        const infak = parseInt(row[8], 10) || 0;
+        const amil = row[10] || "-";
+        const status = row[11] || "-";
+
+        totalJiwaAll += jiwa;
+        totalUangAll += totalBayar;
+        totalInfakAll += infak;
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50 transition";
+        tr.innerHTML = `
+          <td class="p-2 border-b border-slate-100">
+            <span class="font-bold text-teal-800 block">${idTx}</span>
+            <span class="text-[10px] text-slate-400">${waktu}</span>
+          </td>
+          <td class="p-2 border-b border-slate-100">
+            <span class="font-bold text-slate-700 block uppercase">${nama}</span>
+            <span class="text-[10px] text-slate-500 uppercase">${alamat}</span>
+          </td>
+          <td class="p-2 border-b border-slate-100 font-bold text-center">${jiwa} Jiwa</td>
+          <td class="p-2 border-b border-slate-100">
+            <span class="block">${jenis}</span>
+            <span class="font-bold text-teal-700">Rp ${totalBayar.toLocaleString('id-ID')}</span>
+          </td>
+          <td class="p-2 border-b border-slate-100 text-slate-600">${amil}</td>
+          <td class="p-2 border-b border-slate-100">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">${status}</span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      updateStatistikUI(totalJiwaAll, totalUangAll, totalInfakAll);
+    }
+
+    function updateStatistikUI(jiwa, uang, infak) {
+      document.getElementById("statTotalJiwa").innerText = jiwa;
+      document.getElementById("statTotalUang").innerText = `Rp ${uang.toLocaleString('id-ID')}`;
+      document.getElementById("statTotalInfak").innerText = `Rp ${infak.toLocaleString('id-ID')}`;
+    }
+
+    function filterTabelTransaksi() {
+      const keyword = document.getElementById("searchKeyword").value.toLowerCase();
+      const filtered = semuaTransaksiCache.filter(row => {
+        const nama = String(row[2] || "").toLowerCase();
+        const idTx = String(row[1] || "").toLowerCase();
+        const alamat = String(row[3] || "").toLowerCase();
+        return nama.includes(keyword) || idTx.includes(keyword) || alamat.includes(keyword);
+      });
+      renderTabelDanStatistik(filtered);
     }
 
     async function simpanTransaksiOffline() {
@@ -370,12 +447,14 @@
 
         if (result.status === "success") {
           tampilkanAlert("Transaksi posko offline berhasil disimpan!");
-          // Reset form
           document.getElementById("offlineNama").value = "";
           document.getElementById("offlineAlamat").value = "";
           document.getElementById("offlineJiwa").value = "1";
           document.getElementById("offlineInfak").value = "";
           hitungTotalOffline();
+          
+          // Refresh ulang data tabel otomatis
+          loadAmilDashboardData();
         } else {
           tampilkanAlert("Gagal: " + result.message);
         }
@@ -385,10 +464,6 @@
         btn.disabled = false;
         btn.innerText = "Simpan Transaksi Posko";
       }
-    }
-
-    function filterTabelTransaksi() {
-      // Fungsi pencarian live tabel
     }
   </script>
 </body>

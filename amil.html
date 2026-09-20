@@ -41,7 +41,7 @@
   <!-- ========================================== -->
   <!-- DASHBOARD UTAMA AMIL                       -->
   <!-- ========================================== -->
-  <div id="dashboardAmil" class="hidden max-w-4xl mx-auto mt-4 p-4 space-y-4">
+  <div id="dashboardAmil" class="hidden max-w-5xl mx-auto mt-4 p-4 space-y-4">
     
     <!-- HEADER DASHBOARD -->
     <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
@@ -151,12 +151,12 @@
           <table class="w-full text-left border-collapse text-[11px]">
             <thead class="bg-teal-800 text-white sticky top-0">
               <tr>
-                <th class="p-2">Waktu / ID</th>
-                <th class="p-2">Muzakki & Alamat</th>
-                <th class="p-2">Jiwa</th>
-                <th class="p-2">Jenis / Bayar</th>
-                <th class="p-2">Amil</th>
-                <th class="p-2">Status</th>
+                <th class="p-2.5">Waktu / ID</th>
+                <th class="p-2.5">Muzakki & Alamat</th>
+                <th class="p-2.5 text-center">Jiwa</th>
+                <th class="p-2.5">Jenis / Bayar</th>
+                <th class="p-2.5">Amil</th>
+                <th class="p-2.5">Status</th>
               </tr>
             </thead>
             <tbody id="tabelTransaksiBody" class="divide-y divide-slate-100">
@@ -336,7 +336,27 @@
 
       for (let i = listData.length - 1; i >= 0; i--) {
         const row = listData[i];
-        const waktu = row[0] || "-";
+        
+        // Format Tanggal rapi (DD-MM-YYYY HH:mm:ss)
+        let rawDate = row[0] || "";
+        let formattedDate = rawDate;
+        if (rawDate) {
+          try {
+            const d = new Date(rawDate);
+            if (!isNaN(d.getTime())) {
+              const day = String(d.getDate()).padStart(2, '0');
+              const month = String(d.getMonth() + 1).padStart(2, '0');
+              const year = d.getFullYear();
+              const hours = String(d.getHours()).padStart(2, '0');
+              const minutes = String(d.getMinutes()).padStart(2, '0');
+              const seconds = String(d.getSeconds()).padStart(2, '0');
+              formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+            }
+          } catch (err) {
+            formattedDate = rawDate;
+          }
+        }
+
         const idTx = row[1] || "-";
         const nama = row[2] || "-";
         const alamat = row[3] || "-";
@@ -357,35 +377,40 @@
           totalUangAll += infak; 
           
           infoBayarHtml = `
-            <span class="block font-bold text-teal-900">${jenis} (${jumlahKg} Kg)</span>
-            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block">Infak: Rp ${infak.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block">Tanpa Infak</span>`}
+            <span class="block font-bold text-teal-900 whitespace-nowrap">${jenis} (${jumlahKg} Kg)</span>
+            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak: Rp ${infak.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
           `;
         } else {
           totalUangAll += totalBayar;
           infoBayarHtml = `
-            <span class="block">${jenis}</span>
-            <span class="font-bold text-teal-700">Rp ${totalBayar.toLocaleString('id-ID')}</span>
+            <span class="block whitespace-nowrap">${jenis}</span>
+            <span class="font-bold text-teal-700 whitespace-nowrap">Rp ${totalBayar.toLocaleString('id-ID')}</span>
           `;
         }
 
+        let badgeClass = "bg-teal-50 text-teal-700 border-teal-200";
+        if (status.includes("Menunggu")) {
+          badgeClass = "bg-amber-50 text-amber-700 border-amber-200";
+        }
+
         const tr = document.createElement("tr");
-        tr.className = "hover:bg-slate-50 transition";
+        tr.className = "hover:bg-slate-50 transition align-top";
         tr.innerHTML = `
-          <td class="p-2 border-b border-slate-100">
-            <span class="font-bold text-teal-800 block">${idTx}</span>
-            <span class="text-[10px] text-slate-400">${waktu}</span>
+          <td class="p-2.5 border-b border-slate-100">
+            <span class="font-bold text-teal-800 block whitespace-nowrap">${idTx}</span>
+            <span class="text-[10px] text-slate-400 block whitespace-nowrap">${formattedDate}</span>
           </td>
-          <td class="p-2 border-b border-slate-100">
+          <td class="p-2.5 border-b border-slate-100">
             <span class="font-bold text-slate-700 block uppercase">${nama}</span>
             <span class="text-[10px] text-slate-500 uppercase">${alamat}</span>
           </td>
-          <td class="p-2 border-b border-slate-100 font-bold text-center">${jiwa} Jiwa</td>
-          <td class="p-2 border-b border-slate-100">
+          <td class="p-2.5 border-b border-slate-100 font-bold text-center">${jiwa} Jiwa</td>
+          <td class="p-2.5 border-b border-slate-100">
             ${infoBayarHtml}
           </td>
-          <td class="p-2 border-b border-slate-100 text-slate-600">${amil}</td>
-          <td class="p-2 border-b border-slate-100">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">${status}</span>
+          <td class="p-2.5 border-b border-slate-100 text-slate-600 font-medium whitespace-nowrap">${amil}</td>
+          <td class="p-2.5 border-b border-slate-100">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold inline-block border whitespace-nowrap ${badgeClass}">${status}</span>
           </td>
         `;
         tbody.appendChild(tr);
@@ -457,7 +482,7 @@
           infakOpsional: infak,
           totalBayar: totalBayar,
           petugasAmil: petugas,
-          statusKonfirmasi: "Lunas / Diterima Posko"
+          statusKonfirmasi: "Lunas / Posko"
         };
 
         const res = await fetch(API_URL, {

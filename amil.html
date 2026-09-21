@@ -630,7 +630,7 @@
       updateStatistikUI(totalJiwaAll, totalUangZakatAll, totalSemuaBerasKg, totalInfakUangAll);
     }
 
-    // Fungsi helper untuk render isi rincian kuitansi & cetak agar dinamis (Infak Beras & Infak Uang hanya muncul jika ada nilainya)
+    // Fungsi helper render kuitansi & cetak yang aman (Infak Beras disembunyikan jika zakat uang, Infak Uang dimunculkan jika > 0)
     function renderRincianKuitansi(isPrint, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total) {
       const prefix = isPrint ? "p" : "vk";
       
@@ -641,46 +641,47 @@
       const rowInfakBeras = document.getElementById(`row${isPrint ? 'P' : 'Vk'}InfakBeras`);
       const rowInfakUang = document.getElementById(`row${isPrint ? 'P' : 'Vk'}InfakUang`);
 
+      const nBeras = parseFloat(infakBerasKg) || 0;
+      const nUang = parseFloat(infakUangRp) || 0;
+
       if (jenis.includes("Beras")) {
         if (rowZakat) rowZakat.style.display = "none";
         
-        // Infak Beras hanya muncul jika jumlahnya > 0
-        if (infakBerasKg > 0) {
+        if (nBeras > 0) {
           if (rowInfakBeras) rowInfakBeras.style.display = "flex";
-          document.getElementById(`${prefix}InfakBeras`).innerText = infakBerasKg + " Kg";
+          document.getElementById(`${prefix}InfakBeras`).innerText = nBeras + " Kg";
         } else {
           if (rowInfakBeras) rowInfakBeras.style.display = "none";
         }
 
-        // Infak Uang pada zakat beras
-        if (infakUangRp > 0) {
+        if (nUang > 0) {
           if (rowInfakUang) rowInfakUang.style.display = "flex";
-          document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
+          document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + nUang.toLocaleString('id-ID');
         } else {
           if (rowInfakUang) rowInfakUang.style.display = "none";
         }
 
         let totalText = (jiwa * 2.5) + " Kg Beras";
-        if (infakBerasKg > 0) totalText += ` + ${infakBerasKg} Kg Infak Beras`;
-        if (infakUangRp > 0) totalText += ` + Rp ${infakUangRp.toLocaleString('id-ID')}`;
+        if (nBeras > 0) totalText += ` + ${nBeras} Kg Infak Beras`;
+        if (nUang > 0) totalText += ` + Rp ${nUang.toLocaleString('id-ID')}`;
         document.getElementById(`${prefix}Total`).innerText = totalText;
 
       } else {
         if (rowZakat) rowZakat.style.display = "flex";
-        document.getElementById(`${prefix}Zakat`).innerText = "Rp " + zakatUang.toLocaleString('id-ID');
+        document.getElementById(`${prefix}Zakat`).innerText = "Rp " + (parseInt(zakatUang) || 0).toLocaleString('id-ID');
 
-        // Sembunyikan total infak beras jika zakatnya uang
+        // Infak Beras WAJIB disembunyikan total jika zakatnya uang
         if (rowInfakBeras) rowInfakBeras.style.display = "none";
 
-        // Infak Uang hanya muncul jika > 0
-        if (infakUangRp > 0) {
+        // Infak Uang MUNCUL jika nilainya > 0
+        if (nUang > 0) {
           if (rowInfakUang) rowInfakUang.style.display = "flex";
-          document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
+          document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + nUang.toLocaleString('id-ID');
         } else {
           if (rowInfakUang) rowInfakUang.style.display = "none";
         }
 
-        document.getElementById(`${prefix}Total`).innerText = "Rp " + total.toLocaleString('id-ID');
+        document.getElementById(`${prefix}Total`).innerText = "Rp " + (parseInt(total) || 0).toLocaleString('id-ID');
       }
     }
 
@@ -763,8 +764,10 @@
       }
 
       let rincianInfak = "";
-      if (infakBerasKg > 0) rincianInfak += `• *Infak Beras:* ${infakBerasKg} Kg\n`;
-      if (infakUangRp > 0) rincianInfak += `• *Infak Uang:* Rp ${infakUangRp.toLocaleString('id-ID')}\n`;
+      const nBeras = parseFloat(infakBerasKg) || 0;
+      const nUang = parseFloat(infakUangRp) || 0;
+      if (nBeras > 0) rincianInfak += `• *Infak Beras:* ${nBeras} Kg\n`;
+      if (nUang > 0) rincianInfak += `• *Infak Uang:* Rp ${nUang.toLocaleString('id-ID')}\n`;
 
       let pesan = `*KUITANSI DIGITAL ZAKAT FITRAH*\n*LAZMU Masjid Utsman bin Affan*\n\n` +
                   `ID Transaksi: *${id}*\n` +
@@ -774,7 +777,7 @@
                   `Jumlah Jiwa: ${jiwa} Jiwa\n` +
                   `Jenis Pembayaran: *${jenis}*\n` +
                   `${rincianInfak}` +
-                  `Total Bayar: *${jenis.includes('Beras') ? (jiwa*2.5)+' Kg Beras'+(infakUangRp>0?' + Rp '+infakUangRp.toLocaleString('id-ID'):''):'Rp '+total.toLocaleString('id-ID')}*\n\n` +
+                  `Total Bayar: *${jenis.includes('Beras') ? (jiwa*2.5)+' Kg Beras'+(nUang>0?' + Rp '+nUang.toLocaleString('id-ID'):''):'Rp '+total.toLocaleString('id-ID')}*\n\n` +
                   `Petugas Amil: ${amil}\n\n` +
                   `_“Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura.”_`;
 

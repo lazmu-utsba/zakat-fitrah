@@ -10,17 +10,28 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     @media print {
+      @page {
+        margin: 0;
+        size: auto;
+      }
+      body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        overflow: hidden !important;
+      }
       body * { visibility: hidden; }
       #printArea, #printArea * { visibility: visible; }
       #printArea { 
         position: absolute; 
         left: 0; 
         top: 0; 
-        width: 100%; 
-        display: block !important; 
+        width: 100% !important; 
         box-shadow: none !important;
         border: none !important;
         background: white !important;
+        margin: 0 !important;
+        padding: 8px !important;
       }
     }
   </style>
@@ -218,7 +229,7 @@
         <!-- HEADER KUITANSI -->
         <div class="border-b border-[#C29B46]/30 pb-3 text-center">
           <div class="flex justify-center py-1">
-            <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-10 w-auto object-contain" crossorigin="anonymous">
+            <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo LAZMU" class="h-10 w-auto object-contain" crossorigin="anonymous">
           </div>
           <p class="text-[9px] font-bold text-gray-500 uppercase tracking-tight mt-1">TANDA TERIMA ZAKAT FITRAH & INFAK</p>
         </div>
@@ -295,58 +306,58 @@
     </div>
   </div>
 
-  <!-- AREA CETAK FISIK (DOBEL: ATAS KUITANSI MUZAKKI + BAWAH ARSIP AMIL) -->
-  <div id="printArea" class="hidden p-4 max-w-sm mx-auto bg-white text-slate-800 text-xs font-sans space-y-3 border border-slate-400 rounded-lg">
+  <!-- AREA CETAK FISIK (DOBEL: ATAS KUITANSI MUZAKKI + BAWAH ARSIP AMIL) - COMPACT PAS 1 HALAMAN -->
+  <div id="printArea" class="hidden p-3 max-w-sm mx-auto bg-white text-slate-800 text-[11px] font-sans space-y-2 border border-slate-400 rounded-lg">
     
     <!-- BAGIAN ATAS: KUITANSI MUZAKKI (BER-QR & DOA LENGKAP) -->
-    <div class="text-center space-y-1 pb-2 border-b border-dashed border-slate-400">
+    <div class="text-center space-y-1 pb-1.5 border-b border-dashed border-slate-400">
       <div class="flex justify-center">
-        <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-8 object-contain">
+        <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-7 object-contain">
       </div>
       <p class="text-[8px] font-bold text-gray-600 uppercase tracking-tight">TANDA TERIMA ZAKAT FITRAH & INFAK</p>
       
-      <div class="flex justify-between items-center pt-1 px-1">
+      <div class="flex justify-between items-center pt-0.5 px-1">
         <div>
           <span class="text-[9px] text-gray-500 block text-left">ID Transaksi:</span>
           <span class="font-bold text-teal-900 text-xs" id="pId">-</span>
         </div>
         <div>
-          <img id="pQrImg" src="" alt="QR" class="w-10 h-10 object-contain border border-slate-300 rounded p-0.5 bg-white">
+          <img id="pQrImg" src="" alt="QR" class="w-9 h-9 object-contain border border-slate-300 rounded p-0.5 bg-white">
         </div>
       </div>
     </div>
 
-    <div class="text-[10px] space-y-1 text-gray-800 font-medium px-1">
+    <div class="text-[10px] space-y-0.5 text-gray-800 font-medium px-1">
       <div class="flex justify-between"><span>Muzakki:</span> <span class="font-bold uppercase" id="pNama">-</span></div>
       <div class="flex justify-between"><span>Alamat:</span> <span class="uppercase" id="pAlamat">-</span></div>
       <div class="flex justify-between"><span>Tanggal:</span> <span id="pTgl">-</span></div>
     </div>
 
-    <div class="bg-slate-50/80 p-2 rounded border border-slate-200 text-[10px] space-y-1">
+    <div class="bg-slate-50/80 p-1.5 rounded border border-slate-200 text-[10px] space-y-0.5">
       <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span class="font-bold" id="pJiwa">0 Jiwa</span></div>
       <div class="flex justify-between"><span>Jenis Zakat:</span> <span class="font-bold text-teal-800" id="pJenis">Uang</span></div>
       <div class="flex justify-between" id="rowPZakat"><span>Total Zakat:</span> <span class="font-bold" id="pZakat">Rp 0</span></div>
       <div class="flex justify-between" id="rowPInfakUang"><span>Infak Uang:</span> <span class="font-bold text-amber-700" id="pInfakUang">Rp 0</span></div>
-      <div class="flex justify-between border-t border-slate-200 pt-1 font-bold text-teal-800">
+      <div class="flex justify-between border-t border-slate-200 pt-0.5 font-bold text-teal-800">
         <span>TOTAL BAYAR:</span> <span id="pTotal">Rp 0</span>
       </div>
     </div>
 
     <!-- DOA LENGKAP & PETUGAS AMIL UNTUK MUZAKKI -->
-    <div class="text-[9px] text-slate-700 bg-slate-50/50 p-2 rounded border border-slate-100 text-center space-y-1">
+    <div class="text-[9px] text-slate-700 bg-slate-50/50 p-1.5 rounded border border-slate-100 text-center space-y-0.5">
       <p class="italic font-medium">"Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura."</p>
       <p class="text-[8px] text-slate-500 leading-tight">(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)</p>
-      <p class="text-[8px] text-slate-700 font-semibold pt-1 border-t border-slate-200">Petugas Amil: <span id="pAmil" class="font-bold"></span></p>
+      <p class="text-[8px] text-slate-700 font-semibold pt-0.5 border-t border-slate-200">Petugas Amil: <span id="pAmil" class="font-bold"></span></p>
     </div>
 
     <!-- GARIS PEMBATAS PUTUS-PUTUS SOBEKAN -->
-    <div class="text-center text-slate-400 font-mono text-[9px] tracking-widest my-2 select-none">
+    <div class="text-center text-slate-400 font-mono text-[9px] tracking-widest my-1 select-none">
       -------------------------------------------------- (SOBEK DI SINI) --------------------------------------------------
     </div>
 
-    <!-- BAGIAN BAWAH: ARSIP / CATATAN PETUGAS AMIL (ESTETIK & LENGKAP NAMA PETUGAS) -->
-    <div class="text-[10px] space-y-1 text-slate-700 pt-1 px-1">
-      <div class="text-center font-bold tracking-wider text-slate-500 uppercase text-[9px] border-b border-dotted border-slate-300 pb-1 mb-1">
+    <!-- BAGIAN BAWAH: ARsip / CATATAN PETUGAS AMIL (ESTETIK & LENGKAP NAMA PETUGAS) -->
+    <div class="text-[10px] space-y-0.5 text-slate-700 px-1">
+      <div class="text-center font-bold tracking-wider text-slate-500 uppercase text-[9px] border-b border-dotted border-slate-300 pb-0.5 mb-0.5">
         Arsip Rekap Petugas Posko
       </div>
       <div class="flex justify-between"><span>ID Transaksi:</span> <span class="font-bold text-teal-900" id="pBackupId">-</span></div>
@@ -354,7 +365,7 @@
       <div class="flex justify-between"><span>Alamat:</span> <span class="uppercase" id="pBackupAlamat">-</span></div>
       <div class="flex justify-between"><span>Tanggal:</span> <span id="pBackupTgl">-</span></div>
       
-      <div class="border-t border-slate-200 pt-1 mt-1 space-y-0.5 font-medium">
+      <div class="border-t border-slate-200 pt-0.5 mt-0.5 space-y-0.5 font-medium">
         <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span id="pBackupJiwa">-</span></div>
         <div class="flex justify-between"><span>Jenis Zakat:</span> <span id="pBackupJenis">-</span></div>
         <div class="flex justify-between" id="rowPBackupZakat"><span>Total Zakat:</span> <span id="pBackupZakat">-</span></div>
@@ -364,7 +375,7 @@
         </div>
       </div>
 
-      <div class="pt-1 mt-1 border-t border-slate-200 text-[9px] font-semibold flex justify-between">
+      <div class="pt-0.5 mt-0.5 border-t border-slate-200 text-[9px] font-semibold flex justify-between">
         <span>Petugas Amil:</span> <span id="pBackupAmil" class="font-bold text-slate-800"></span>
       </div>
     </div>
@@ -382,7 +393,6 @@
   </div>
 
   <script>
-    // Deklarasi API_URL yang aman dari error redeclaration
     if (typeof API_URL === 'undefined') {
       var API_URL = "https://script.google.com/macros/s/AKfycbyHt0yFqUiJ4P4zMWNbzhJfJzNumxQ2r9MTwaWMhdq7N_JHt7LqmhGju_nqXFhzmTAw/exec";
     }
@@ -755,7 +765,7 @@
       document.getElementById("pAmil").innerText = amil;
       
       const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" + encodeURIComponent(id);
-      document.getElementById("pQrImg").src = qrUrl;
+      const qrImg = document.getElementById("pQrImg");
 
       renderRincianKuitansi(true, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total);
 
@@ -795,11 +805,24 @@
       const printAreaEl = document.getElementById("printArea");
       printAreaEl.classList.remove("hidden");
 
-      // Berikan jeda 400ms agar QR Code sempat ter-load sempurna sebelum dialog print muncul
-      setTimeout(() => {
+      // Fungsi eksekusi cetak
+      const triggerPrint = () => {
         window.print();
         printAreaEl.classList.add("hidden");
-      }, 400);
+      };
+
+      // Pastikan QR Code benar-benar selesai di-load sebelum window.print() dipanggil
+      qrImg.onload = function() {
+        setTimeout(triggerPrint, 150);
+      };
+      qrImg.onerror = function() {
+        setTimeout(triggerPrint, 150);
+      };
+
+      qrImg.src = qrUrl;
+      if (qrImg.complete) {
+        setTimeout(triggerPrint, 150);
+      }
     }
 
     function cetakLangsungModal() {

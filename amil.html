@@ -203,7 +203,7 @@
     </div>
   </div>
 
-  <!-- POP-UP MODAL KUITANSI DIGITAL VISUAL -->
+  <!-- POP-UP MODAL KUITANSI DIGITAL VISUAL (Desain Elegan Terbaru Mengikuti kuitansi.html) -->
   <div id="modalKuitansiVisual" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 my-auto border border-slate-100">
       <div class="flex justify-between items-center border-b pb-2">
@@ -211,53 +211,69 @@
         <button type="button" onclick="tutupModalKuitansi()" class="text-slate-400 hover:text-red-600 font-bold text-sm">✕</button>
       </div>
 
-      <!-- AREA GAMBAR KUITANSI (Padding p-6 meniru persis kuitansi.html biar longgar & tidak mepet border) -->
-      <div id="areaKuitansiVisual" class="p-6 bg-amber-50/30 border-2 border-dashed border-amber-200 rounded-xl text-left space-y-4">
-        <div class="border-b border-slate-300 pb-3 text-center">
-          <div class="flex justify-center mb-2">
-            <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-10 object-contain">
+      <!-- AREA GAMBAR KUITANSI ELEGAN -->
+      <div id="areaKuitansiVisual" class="p-6 bg-[#FBF7EE] border border-[#C29B46]/60 rounded-xl text-left space-y-4 shadow-sm">
+        
+        <!-- HEADER KUITANSI -->
+        <div class="border-b border-[#C29B46]/30 pb-3 text-center">
+          <div class="flex justify-center py-1">
+            <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo LAZMU" class="h-10 w-auto object-contain" crossorigin="anonymous">
           </div>
-          <p class="text-[8px] font-bold text-gray-500 uppercase tracking-tight">TANDA TERIMA ZAKAT FITRAH & INFAK</p>
+          <p class="text-[9px] font-bold text-gray-500 uppercase tracking-tight mt-1">TANDA TERIMA ZAKAT FITRAH & INFAK</p>
+        </div>
+
+        <!-- No Kuitansi & QR Code -->
+        <div class="flex justify-between items-center border-b border-[#C29B46]/20 pb-2.5">
+          <div>
+            <span class="text-gray-500 text-[10px] block">ID Transaksi / No:</span>
+            <span class="font-bold text-[#0B7A6E] text-xs" id="vkId">-</span>
+          </div>
+          <div>
+            <img id="vkQrImg" src="" alt="QR Code" class="w-10 h-10 object-contain border border-[#C29B46]/30 rounded p-0.5 bg-white shadow-sm" crossorigin="anonymous">
+          </div>
         </div>
 
         <div class="text-[11px] space-y-1.5 text-gray-800 font-medium">
-          <div class="flex justify-between border-b border-slate-100 pb-1.5">
-            <span class="text-gray-500">ID Transaksi:</span>
-            <span class="font-bold text-teal-900" id="vkId">-</span>
-          </div>
-          <div class="flex justify-between border-b border-slate-100 pb-1.5">
+          <div class="flex justify-between border-b border-[#C29B46]/20 pb-1.5">
             <span class="text-gray-500">Muzakki:</span>
-            <span class="font-bold uppercase" id="vkNama">-</span>
+            <span class="font-bold uppercase text-[#0B7A6E]" id="vkNama">-</span>
           </div>
-          <div class="flex justify-between border-b border-slate-100 pb-1.5">
+          <div class="flex justify-between border-b border-[#C29B46]/20 pb-1.5">
             <span class="text-gray-500">Alamat:</span>
             <span id="vkAlamat" class="uppercase">-</span>
           </div>
-          <div class="flex justify-between border-b border-slate-100 pb-1.5">
+          <div class="flex justify-between border-b border-[#C29B46]/20 pb-1.5">
             <span class="text-gray-500">Tanggal:</span>
             <span id="vkTanggal">-</span>
           </div>
         </div>
 
         <!-- Rincian Zakat & Infak -->
-        <div class="bg-white p-3 rounded-lg border border-slate-200 text-[11px] space-y-1.5">
+        <div class="bg-white p-3 rounded-lg border border-[#C29B46]/30 text-[11px] space-y-1.5">
           <span class="font-bold text-gray-500 block uppercase text-[10px]">Rincian Pembayaran:</span>
           <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span class="font-bold" id="vkJiwa">0 Jiwa</span></div>
-          <div class="flex justify-between"><span>Jenis Zakat:</span> <span class="font-bold text-teal-800" id="vkJenis">Uang</span></div>
+          <div class="flex justify-between"><span>Jenis Zakat:</span> <span class="font-bold text-[#0B7A6E]" id="vkJenis">Uang</span></div>
           <div class="flex justify-between" id="rowVkZakat"><span>Total Zakat:</span> <span class="font-bold" id="vkZakat">Rp 0</span></div>
           <div class="flex justify-between" id="rowVkInfakBeras"><span>Infak Beras:</span> <span class="font-bold text-amber-700" id="vkInfakBeras">0 Kg</span></div>
           <div class="flex justify-between" id="rowVkInfakUang"><span>Infak Uang:</span> <span class="font-bold text-amber-700" id="vkInfakUang">Rp 0</span></div>
-          <div class="flex justify-between border-t border-slate-200 pt-1.5 font-bold text-teal-800 text-xs">
+          <div class="flex justify-between border-t border-[#C29B46]/20 pt-1.5 font-bold text-[#0B7A6E] text-xs">
             <span>TOTAL BAYAR:</span> <span id="vkTotal">Rp 0</span>
           </div>
         </div>
 
         <!-- DOA LENGKAP -->
-        <div class="text-[10px] italic text-teal-800 bg-teal-50/60 p-2.5 rounded-lg border border-teal-100 space-y-1">
-          <p class="font-medium text-center">"Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura."</p>
-          <p class="text-[9px] text-gray-500 text-center not-italic leading-tight">(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)</p>
-          <p class="text-[9px] text-slate-600 not-italic pt-1.5 border-t border-teal-100/60 text-center">Petugas Amil: <span id="vkAmil" class="font-bold"></span></p>
+        <div class="text-[10px] italic text-[#0B7A6E] bg-[#0B7A6E]/5 p-2.5 rounded-lg border border-[#0B7A6E]/20 space-y-1.5 text-center">
+          <p class="font-medium">"Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura."</p>
+          <p class="text-[9px] text-gray-500 not-italic leading-tight">(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)</p>
+          <p class="text-[9px] text-slate-600 not-italic pt-1.5 border-t border-[#0B7A6E]/20 font-semibold">Petugas Amil: <span id="vkAmil" class="font-bold"></span></p>
         </div>
+
+        <!-- FOOTER KUITANSI -->
+        <div class="text-center pt-2.5 border-t border-[#C29B46]/30 space-y-0.5">
+          <p class="text-[9px] font-bold text-[#0B7A6E]">Lembaga Amil Zakat Masjid Utsman bin Affan</p>
+          <p class="text-[8px] text-gray-400">The Green City View Blok K-1, Kel. Jatihandap, Kec. Mandalajati, Kota Bandung</p> 
+        </div>
+
       </div>
 
       <!-- Tombol Aksi Kuitansi Visual -->
@@ -690,6 +706,10 @@
       document.getElementById("vkTanggal").innerText = tgl;
       document.getElementById("vkAmil").innerText = amil;
 
+      // Generate QR Code otomatis berdasarkan ID Transaksi
+      const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" + encodeURIComponent(id);
+      document.getElementById("vkQrImg").src = qrUrl;
+
       renderRincianKuitansi(false, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total);
 
       document.getElementById("modalKuitansiVisual").classList.remove("hidden");
@@ -725,18 +745,33 @@
     async function downloadGambarKuitansi() {
       const element = document.getElementById("areaKuitansiVisual");
       try {
-        const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-        const imageLink = canvas.toDataURL("image/png");
+        const canvasAsli = await html2canvas(element, { scale: 2, useCORS: true });
         
-        const link = document.createElement("a");
-        const namaFile = currentModalData.nama.replace(/[^a-zA-Z0-9]/g, '_') || "Muzakki";
-        link.download = `Kuitansi_Zakat_${currentModalData.id}_${namaFile}.png`;
-        link.href = imageLink;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Menambahkan padding space di sekeliling gambar biar tidak mepet border saat didownload
+        const paddingSpace = 10;
+        const canvasBaru = document.createElement("canvas");
+        canvasBaru.width = canvasAsli.width + (paddingSpace * 2);
+        canvasBaru.height = canvasAsli.height + (paddingSpace * 2);
+        
+        const ctx = canvasBaru.getContext("2d");
+        ctx.fillStyle = "#FFFFFF"; 
+        ctx.fillRect(0, 0, canvasBaru.width, canvasBaru.height);
+        ctx.drawImage(canvasAsli, paddingSpace, paddingSpace);
 
-        tampilkanAlert("Gambar kuitansi digital berhasil di-download!");
+        canvasBaru.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          const namaFile = currentModalData.nama.replace(/[^a-zA-Z0-9]/g, '_') || "Muzakki";
+          link.download = `Kuitansi_Zakat_${currentModalData.id}_${namaFile}.png`;
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+
+          tampilkanAlert("Gambar kuitansi digital berhasil di-download!");
+        }, "image/png");
+
       } catch (err) {
         tampilkanAlert("Gagal mendownload kuitansi: " + err.message);
       }

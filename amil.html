@@ -376,7 +376,6 @@
         const jenis = row[5] || "-";
         const zakatUang = parseInt(row[7], 10) || 0;
         const infak = parseInt(row[8], 10) || 0;
-        const totalBayar = parseInt(row[9], 10) || 0;
         const amil = row[10] || "-";
         const status = row[11] || "-";
 
@@ -396,8 +395,8 @@
           totalUangZakatAll += zakatUang;
           infoBayarHtml = `
             <span class="block whitespace-nowrap">${jenis}</span>
-            <span class="font-bold text-teal-700 whitespace-nowrap">Rp ${totalBayar.toLocaleString('id-ID')}</span>
-            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Zakat: Rp ${zakatUang.toLocaleString('id-ID')} \vert{} Infak: Rp${infak.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
+            <span class="font-bold text-emerald-700 whitespace-nowrap">Rp ${zakatUang.toLocaleString('id-ID')}</span>
+            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak: Rp ${infak.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
           `;
         }
 

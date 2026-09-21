@@ -6,6 +6,13 @@
   <title>Dashboard Amil - Zakat Fitrah LAZMU</title>
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ">  
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
 </head>
 <body class="bg-slate-100 min-h-screen font-sans pb-10">
 
@@ -41,7 +48,7 @@
   <!-- ========================================== -->
   <!-- DASHBOARD UTAMA AMIL                       -->
   <!-- ========================================== -->
-  <div id="dashboardAmil" class="hidden max-w-5xl mx-auto mt-4 p-4 space-y-4">
+  <div id="dashboardAmil" class="hidden max-w-6xl mx-auto mt-4 p-4 space-y-4">
     
     <!-- HEADER DASHBOARD -->
     <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
@@ -62,7 +69,7 @@
       </button>
     </div>
 
-    <!-- GRID UTAMA: FORM INPUT OFFLINE & STATISTIK -->
+    <!-- GRID UTAMA -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       
       <!-- KOLOM KIRI: FORM INPUT / EDIT POSKO -->
@@ -72,13 +79,10 @@
           <button type="button" id="btnBatalEdit" onclick="resetFormMode()" class="hidden text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded-lg transition">Batal Edit</button>
         </div>
 
-        <!-- Hidden ID untuk Mode Edit -->
         <input type="hidden" id="editIdTransaksi" value="">
 
-        <!-- Petugas Amil -->
         <label class="block text-xs font-semibold text-gray-700 mb-1">Petugas Amil yang Bertugas</label>
         <select id="inputPetugasAmil" class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-2 focus:ring-2 focus:ring-teal-500 outline-none bg-white">
-          <!-- Render dinamis list amil -->
         </select>
 
         <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Kepala Keluarga / Muzakki</label>
@@ -88,6 +92,10 @@
         <label class="block text-xs font-semibold text-gray-700 mb-1">Alamat / RT-RW</label>
         <input type="text" id="offlineAlamat" placeholder="Contoh: GCV Blok K2" 
           class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-2 focus:ring-2 focus:ring-teal-500 outline-none uppercase">
+
+        <label class="block text-xs font-semibold text-gray-700 mb-1">No. WhatsApp (Opsional untuk Kirim Kuitansi)</label>
+        <input type="text" id="offlineNoWa" placeholder="Contoh: 08123456789" 
+          class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-2 focus:ring-2 focus:ring-teal-500 outline-none">
 
         <label class="block text-xs font-semibold text-gray-700 mb-1">Jumlah Jiwa</label>
         <div class="flex items-center mb-2">
@@ -104,21 +112,18 @@
           <option value="Beras (Langsung)">Beras (2,5 Kg / jiwa)</option>
         </select>
 
-        <!-- Wrapper Harga Custom -->
         <div id="wrapperCustomOffline" class="hidden mb-2">
           <label class="block text-xs font-semibold text-gray-700 mb-1">Harga Beras per Jiwa (Rp)</label>
           <input type="text" id="offlineCustomHarga" placeholder="Contoh: 40000" oninput="formatRupiahMasking(this); hitungTotalOffline();"
             class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <!-- Wrapper Infak Uang -->
         <div id="wrapperInfakUang" class="mb-2">
           <label class="block text-xs font-semibold text-gray-700 mb-1">Infak / Sedekah Uang (Opsional)</label>
           <input type="text" id="offlineInfak" placeholder="0" oninput="formatRupiahMasking(this); hitungTotalOffline();"
             class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <!-- Wrapper Infak Beras (Kelipatan 0.5 Kg) -->
         <div id="wrapperInfakBeras" class="hidden mb-3">
           <label class="block text-xs font-semibold text-amber-700 mb-1">Infak Beras / Sedekah (Kg)</label>
           <div class="flex items-center">
@@ -129,7 +134,6 @@
           </div>
         </div>
 
-        <!-- Ringkasan Singkat -->
         <div class="bg-teal-50 border border-teal-200 rounded-xl p-2.5 text-[11px] space-y-1 mb-3">
           <div class="flex justify-between"><span>Total Zakat:</span><span id="txtOfflineZakat" class="font-bold">Rp 45.000</span></div>
           <div class="flex justify-between"><span>Total Bayar:</span><span id="txtOfflineTotal" class="font-bold text-teal-700">Rp 45.000</span></div>
@@ -145,7 +149,6 @@
       <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-2 space-y-4">
         <h2 class="text-xs font-bold text-teal-800 uppercase border-b pb-2">Rekapitulasi & Riwayat Transaksi</h2>
 
-        <!-- Kotak Ringkasan Statistik (4 Kolom) -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
           <div class="bg-slate-50 border rounded-xl p-2.5">
             <p class="text-[10px] text-slate-400 font-semibold uppercase">Total Jiwa</p>
@@ -165,13 +168,11 @@
           </div>
         </div>
 
-        <!-- Fitur Pencarian Data -->
         <div class="flex gap-2">
           <input type="text" id="searchKeyword" placeholder="Cari nama muzakki / ID transaksi..." oninput="filterTabelTransaksi()"
             class="w-full px-3 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <!-- Tabel Data (Responsive Scroll) -->
         <div class="overflow-x-auto border border-slate-200 rounded-xl max-h-96">
           <table class="w-full text-left border-collapse text-[11px]">
             <thead class="bg-teal-800 text-white sticky top-0">
@@ -181,7 +182,7 @@
                 <th class="p-2.5 text-center">Jiwa</th>
                 <th class="p-2.5">Jenis / Bayar</th>
                 <th class="p-2.5">Amil</th>
-                <th class="p-2.5 text-center">Aksi</th>
+                <th class="p-2.5 text-center">Aksi (Edit / Struk / WA)</th>
               </tr>
             </thead>
             <tbody id="tabelTransaksiBody" class="divide-y divide-slate-100">
@@ -193,6 +194,31 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- AREA CETAK STRUK / KUITANSI KECIL -->
+  <div id="printArea" class="hidden p-6 max-w-sm mx-auto bg-white text-slate-800 text-xs font-mono space-y-2 border border-slate-300">
+    <div class="text-center border-b pb-2 space-y-0.5">
+      <h3 class="font-bold text-sm">LAZMU MASJID UTSMAN BIN AFFAN</h3>
+      <p class="text-[10px]">Kuitansi Bukti Pembayaran Zakat Fitrah</p>
+    </div>
+    <div class="space-y-1 py-1">
+      <div class="flex justify-between"><span>ID Transaksi:</span><span id="pId" class="font-bold"></span></div>
+      <div class="flex justify-between"><span>Tanggal:</span><span id="pTgl"></span></div>
+      <div class="flex justify-between"><span>Muzakki:</span><span id="pNama" class="font-bold uppercase"></span></div>
+      <div class="flex justify-between"><span>Alamat:</span><span id="pAlamat" class="uppercase"></span></div>
+      <div class="flex justify-between"><span>Jumlah Jiwa:</span><span id="pJiwa"></span></div>
+    </div>
+    <div class="border-t border-b py-2 space-y-1">
+      <div class="flex justify-between"><span>Jenis Pembayaran:</span><span id="pJenis" class="font-bold"></span></div>
+      <div class="flex justify-between"><span>Total Zakat:</span><span id="pZakat"></span></div>
+      <div class="flex justify-between"><span>Infak / Sedekah:</span><span id="pInfak"></span></div>
+      <div class="flex justify-between font-bold text-teal-800 pt-1 border-t"><span>TOTAL BAYAR:</span><span id="pTotal"></span></div>
+    </div>
+    <div class="text-center pt-2 space-y-1">
+      <p>Petugas Amil: <span id="pAmil" class="font-bold"></span></p>
+      <p class="text-[10px] text-slate-500 italic">"Jazakumullahu khairan katsiran"</p>
     </div>
   </div>
 
@@ -248,11 +274,7 @@
           });
 
           loadAmilDashboardData();
-
-          setInterval(() => {
-            loadAmilDashboardData(true);
-          }, 5000);
-
+          setInterval(() => { loadAmilDashboardData(true); }, 5000);
         } else {
           tampilkanAlert(data.message || "Password salah!");
         }
@@ -284,7 +306,7 @@
     function ubahInfakBerasOffline(val) {
       const el = document.getElementById("offlineInfakBerasKg");
       let curr = parseFloat(el.value) || 0;
-      curr += val * 0.5; // Kelipatan 0.5 Kg
+      curr += val * 0.5;
       if (curr < 0) curr = 0;
       el.value = curr;
       hitungTotalOffline();
@@ -410,8 +432,7 @@
               const year = d.getFullYear();
               const hours = String(d.getHours()).padStart(2, '0');
               const minutes = String(d.getMinutes()).padStart(2, '0');
-              const seconds = String(d.getSeconds()).padStart(2, '0');
-              formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+              formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
             }
           } catch (err) {
             formattedDate = rawDate;
@@ -421,13 +442,14 @@
         const idTx = row[1] || "-";
         const nama = row[2] || "-";
         const alamat = row[3] || "-";
-        const jiwa = parseInt(row[4], 10) || 0;
-        const jenis = row[5] || "-";
-        const hargaSatuan = parseInt(row[6], 10) || 0;
-        const zakatUang = parseInt(row[7], 10) || 0;
-        const infak = parseInt(row[8], 10) || 0;
-        const amil = row[10] || "-";
-        const status = row[11] || "-";
+        const noWa = row[4] || "";
+        const jiwa = parseInt(row[5], 10) || 0;
+        const jenis = row[6] || "-";
+        const hargaSatuan = parseInt(row[7], 10) || 0;
+        const zakatUang = parseInt(row[8], 10) || 0;
+        const infak = parseInt(row[9], 10) || 0;
+        const totalBayar = parseInt(row[10], 10) || 0;
+        const amil = row[11] || "-";
 
         totalJiwaAll += jiwa;
 
@@ -473,16 +495,25 @@
           <td class="p-2.5 border-b border-slate-100">
             <span class="font-bold text-slate-700 block uppercase">${nama}</span>
             <span class="text-[10px] text-slate-500 uppercase">${alamat}</span>
+            ${noWa ? `<span class="text-[10px] text-emerald-600 block">WA: ${noWa}</span>` : ''}
           </td>
           <td class="p-2.5 border-b border-slate-100 font-bold text-center">${jiwa} Jiwa</td>
           <td class="p-2.5 border-b border-slate-100">
             ${infoBayarHtml}
           </td>
           <td class="p-2.5 border-b border-slate-100 text-slate-600 font-medium whitespace-nowrap">${amil}</td>
-          <td class="p-2.5 border-b border-slate-100 text-center">
-            <button type="button" onclick="siapkanEditTransaksi('${idTx}', '${nama}', '${alamat}', ${jiwa}, '${jenis}', ${hargaSatuan}, ${infak}, '${amil}')" 
-              class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer">
+          <td class="p-2.5 border-b border-slate-100 text-center space-x-1 whitespace-nowrap">
+            <button type="button" onclick="siapkanEditTransaksi('${idTx}', '${nama}', '${alamat}', '${noWa}', ${jiwa}, '${jenis}', ${hargaSatuan}, ${infak}, '${amil}')" 
+              class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Edit">
               Edit
+            </button>
+            <button type="button" onclick="cetakStruk('${formattedDate}', '${idTx}', '${nama}', '${alamat}', ${jiwa}, '${jenis}', ${zakatUang}, ${infak}, ${totalBayar}, '${amil}')" 
+              class="bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Cetak Kuitansi">
+              Cetak
+            </button>
+            <button type="button" onclick="kirimWa('${noWa}', '${idTx}', '${formattedDate}', '${nama}', '${alamat}', ${jiwa}, '${jenis}', ${zakatUang}, ${infak}, ${totalBayar}, '${amil}')" 
+              class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Kirim WA">
+              WA
             </button>
           </td>
         `;
@@ -493,10 +524,66 @@
       updateStatistikUI(totalJiwaAll, totalUangZakatAll, totalSemuaBerasKg, totalInfakAll);
     }
 
-    function siapkanEditTransaksi(id, nama, alamat, jiwa, jenis, hargaSatuan, infak, amil) {
+    function cetakStruk(tgl, id, nama, alamat, jiwa, jenis, zakatUang, infak, total, amil) {
+      document.getElementById("pId").innerText = id;
+      document.getElementById("pTgl").innerText = tgl;
+      document.getElementById("pNama").innerText = nama;
+      document.getElementById("pAlamat").innerText = alamat;
+      document.getElementById("pJiwa").innerText = jiwa + " Jiwa";
+      document.getElementById("pJenis").innerText = jenis;
+      
+      if (jenis.includes("Beras")) {
+        document.getElementById("pZakat").innerText = (jiwa * 2.5) + " Kg Beras";
+        document.getElementById("pInfak").innerText = infak < 100 ? infak + " Kg Beras" : "Rp " + infak.toLocaleString('id-ID');
+        document.getElementById("pTotal").innerText = (jiwa * 2.5) + " Kg Beras" + (infak > 0 ? " + Infak" : "");
+      } else {
+        document.getElementById("pZakat").innerText = "Rp " + zakatUang.toLocaleString('id-ID');
+        document.getElementById("pInfak").innerText = "Rp " + infak.toLocaleString('id-ID');
+        document.getElementById("pTotal").innerText = "Rp " + total.toLocaleString('id-ID');
+      }
+      document.getElementById("pAmil").innerText = amil;
+
+      window.print();
+    }
+
+    function kirimWa(noWa, id, tgl, nama, alamat, jiwa, jenis, zakatUang, infak, total, amil) {
+      if (!noWa || noWa === "-") {
+        let inputNo = prompt("Masukkan No. WhatsApp Muzakki (Contoh: 08123456789):");
+        if (!inputNo) return;
+        noWa = inputNo;
+      }
+      
+      let formatNo = noWa.replace(/[^0-9]/g, '');
+      if (formatNo.startsWith('0')) {
+        formatNo = '62' + formatNo.substring(1);
+      }
+
+      let rincianInfak = "";
+      if (infak > 0) {
+        rincianInfak = infak < 100 ? `*Infak Beras:* ${infak} Kg\n` : `*Infak Uang:* Rp ${infak.toLocaleString('id-ID')}\n`;
+      }
+
+      let pesan = `*KUITANSI DIGITAL ZAKAT FITRAH*\n*LAZMU Masjid Utsman bin Affan*\n\n` +
+                  `ID Transaksi: *${id}*\n` +
+                  `Tanggal: ${tgl}\n\n` +
+                  `Nama: *${nama}*\n` +
+                  `Alamat: ${alamat}\n` +
+                  `Jumlah Jiwa: ${jiwa} Jiwa\n` +
+                  `Jenis Pembayaran: *${jenis}*\n` +
+                  `${rincianInfak}` +
+                  `Total Bayar: *${jenis.includes('Beras') ? (jiwa*2.5)+' Kg Beras' : 'Rp '+total.toLocaleString('id-ID')}*\n\n` +
+                  `Petugas Amil: ${amil}\n\n` +
+                  `_Jazakumullahu khairan katsiran atas zakat & infak yang disalurkan._`;
+
+      let urlWa = `https://wa.me/${formatNo}?text=` + encodeURIComponent(pesan);
+      window.open(urlWa, '_blank');
+    }
+
+    function siapkanEditTransaksi(id, nama, alamat, noWa, jiwa, jenis, hargaSatuan, infak, amil) {
       document.getElementById("editIdTransaksi").value = id;
       document.getElementById("offlineNama").value = nama;
       document.getElementById("offlineAlamat").value = alamat;
+      document.getElementById("offlineNoWa").value = noWa !== "-" ? noWa : "";
       document.getElementById("offlineJiwa").value = jiwa;
       document.getElementById("offlineJenisBayar").value = jenis;
       document.getElementById("inputPetugasAmil").value = amil;
@@ -534,6 +621,7 @@
       document.getElementById("editIdTransaksi").value = "";
       document.getElementById("offlineNama").value = "";
       document.getElementById("offlineAlamat").value = "";
+      document.getElementById("offlineNoWa").value = "";
       document.getElementById("offlineJiwa").value = "1";
       document.getElementById("offlineInfak").value = "";
       document.getElementById("offlineInfakBerasKg").value = "0";
@@ -579,6 +667,7 @@
     async function simpanTransaksiOffline() {
       const nama = document.getElementById("offlineNama").value.trim().toUpperCase();
       const alamat = document.getElementById("offlineAlamat").value.trim().toUpperCase();
+      const noWa = document.getElementById("offlineNoWa").value.trim();
       const jiwa = parseInt(document.getElementById("offlineJiwa").value, 10) || 1;
       const petugas = document.getElementById("inputPetugasAmil").value;
       const jenis = document.getElementById("offlineJenisBayar").value;
@@ -623,6 +712,7 @@
           secretCode: "z9X!mQ7#pL2$vW8@kX4%nR3&bT6*yH5",
           namaMuzakki: nama,
           alamat: alamat,
+          noWa: noWa,
           jumlahJiwa: jiwa,
           jenisBayar: jenis,
           hargaSatuan: hargaSatuan,
@@ -658,6 +748,7 @@
     async function processUpdateTransaksi(idTx) {
       const nama = document.getElementById("offlineNama").value.trim().toUpperCase();
       const alamat = document.getElementById("offlineAlamat").value.trim().toUpperCase();
+      const noWa = document.getElementById("offlineNoWa").value.trim();
       const jiwa = parseInt(document.getElementById("offlineJiwa").value, 10) || 1;
       const petugas = document.getElementById("inputPetugasAmil").value;
       const jenis = document.getElementById("offlineJenisBayar").value;
@@ -698,6 +789,7 @@
           idTransaksi: idTx,
           namaMuzakki: nama,
           alamat: alamat,
+          noWa: noWa,
           jumlahJiwa: jiwa,
           jenisBayar: jenis,
           hargaSatuan: hargaSatuan,

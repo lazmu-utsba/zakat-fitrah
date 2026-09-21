@@ -6,6 +6,8 @@
   <title>Dashboard Amil - Zakat Fitrah LAZMU</title>
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ">  
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- html2canvas kanggé Download Kuitansi Visual -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     @media print {
       body * { visibility: hidden; }
@@ -16,9 +18,7 @@
 </head>
 <body class="bg-slate-100 min-h-screen font-sans pb-10">
 
-  <!-- ========================================== -->
-  <!-- MODAL LOGIN AMIL                           -->
-  <!-- ========================================== -->
+  <!-- MODAL LOGIN AMIL -->
   <div id="loginModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border border-slate-100">
       <div class="flex justify-center">
@@ -45,12 +45,9 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- DASHBOARD UTAMA AMIL                       -->
-  <!-- ========================================== -->
+  <!-- DASHBOARD UTAMA AMIL -->
   <div id="dashboardAmil" class="hidden max-w-6xl mx-auto mt-4 p-4 space-y-4">
     
-    <!-- HEADER DASHBOARD -->
     <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div class="flex items-center gap-3">
         <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo" class="w-12 h-12 object-contain rounded-full border p-0.5">
@@ -69,10 +66,9 @@
       </button>
     </div>
 
-    <!-- GRID UTAMA -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       
-      <!-- KOLOM KIRI: FORM INPUT / EDIT POSKO -->
+      <!-- FORM INPUT / EDIT POSKO -->
       <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-1 space-y-3">
         <div class="flex justify-between items-center border-b pb-2">
           <h2 id="formTitle" class="text-xs font-bold text-teal-800 uppercase">Input Zakat Offline (Posko)</h2>
@@ -147,7 +143,7 @@
         </button>
       </div>
 
-      <!-- KOLOM KANAN: STATISTIK & TABEL TRANSAKSI -->
+      <!-- STATISTIK & TABEL TRANSAKSI -->
       <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-2 space-y-4">
         <h2 class="text-xs font-bold text-teal-800 uppercase border-b pb-2">Rekapitulasi & Riwayat Transaksi</h2>
 
@@ -184,7 +180,7 @@
                 <th class="p-2.5 text-center">Jiwa</th>
                 <th class="p-2.5">Jenis / Bayar</th>
                 <th class="p-2.5">Amil</th>
-                <th class="p-2.5 text-center">Aksi (Edit / Struk / WA)</th>
+                <th class="p-2.5 text-center">Aksi (Edit / Kuitansi / WA)</th>
               </tr>
             </thead>
             <tbody id="tabelTransaksiBody" class="divide-y divide-slate-100">
@@ -199,29 +195,75 @@
     </div>
   </div>
 
-  <!-- AREA CETAK STRUK -->
-  <div id="printArea" class="hidden p-6 max-w-sm mx-auto bg-white text-slate-800 text-xs font-mono space-y-2 border border-slate-300">
-    <div class="text-center border-b pb-2 space-y-0.5">
-      <h3 class="font-bold text-sm">LAZMU MASJID UTSMAN BIN AFFAN</h3>
-      <p class="text-[10px]">Kuitansi Bukti Pembayaran Zakat Fitrah</p>
-    </div>
-    <div class="space-y-1 py-1">
-      <div class="flex justify-between"><span>ID Transaksi:</span><span id="pId" class="font-bold"></span></div>
-      <div class="flex justify-between"><span>Tanggal:</span><span id="pTgl"></span></div>
-      <div class="flex justify-between"><span>Muzakki:</span><span id="pNama" class="font-bold uppercase"></span></div>
-      <div class="flex justify-between"><span>Alamat:</span><span id="pAlamat" class="uppercase"></span></div>
-      <div class="flex justify-between"><span>Jumlah Jiwa:</span><span id="pJiwa"></span></div>
-    </div>
-    <div class="border-t border-b py-2 space-y-1">
-      <div class="flex justify-between"><span>Jenis Pembayaran:</span><span id="pJenis" class="font-bold"></span></div>
-      <div class="flex justify-between"><span>Total Zakat:</span><span id="pZakat"></span></div>
-      <div class="flex justify-between"><span>Infak Beras:</span><span id="pInfakBeras"></span></div>
-      <div class="flex justify-between"><span>Infak Uang:</span><span id="pInfakUang"></span></div>
-      <div class="flex justify-between font-bold text-teal-800 pt-1 border-t"><span>TOTAL BAYAR:</span><span id="pTotal"></span></div>
-    </div>
-    <div class="text-center pt-2 space-y-1">
-      <p>Petugas Amil: <span id="pAmil" class="font-bold"></span></p>
-      <p class="text-[10px] text-slate-500 italic">"Jazakumullahu khairan katsiran"</p>
+  <!-- POP-UP MODAL KUITANSI DIGITAL VISUAL (HTML2CANVAS) -->
+  <div id="modalKuitansiVisual" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 my-auto border border-slate-100">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="text-xs font-bold text-teal-800 uppercase">Kuitansi Digital Zakat Fitrah</h3>
+        <button type="button" onclick="tutupModalKuitansi()" class="text-slate-400 hover:text-red-600 font-bold text-sm">✕</button>
+      </div>
+
+      <!-- AREA GAMBAR KUITANSI YANG AKAN DI-RENDER -->
+      <div id="areaKuitansiVisual" class="p-4 bg-amber-50/30 border-2 border-dashed border-amber-200 rounded-xl text-left space-y-3">
+        <div class="border-b border-slate-300 pb-2 text-center">
+          <div class="flex justify-center mb-1">
+            <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo LAZMU" class="w-10 h-10 object-contain rounded-full shadow-sm border border-slate-100 bg-white p-0.5">
+          </div>
+          <h3 class="font-bold text-teal-800 text-xs">lazmu</h3>
+          <p class="text-[9px] text-gray-600 font-semibold">Lembaga Amil Zakat Masjid Utsman bin Affan</p>
+          <p class="text-[8px] font-bold text-gray-500 uppercase tracking-tight mt-0.5">TANDA TERIMA ZAKAT FITRAH & INFAK</p>
+        </div>
+
+        <div class="text-[11px] space-y-1 text-gray-800 font-medium">
+          <div class="flex justify-between border-b border-slate-100 pb-1">
+            <span class="text-gray-500">ID Transaksi:</span>
+            <span class="font-bold text-teal-900" id="vkId">-</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-100 pb-1">
+            <span class="text-gray-500">Muzakki:</span>
+            <span class="font-bold uppercase" id="vkNama">-</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-100 pb-1">
+            <span class="text-gray-500">Alamat:</span>
+            <span id="vkAlamat" class="uppercase">-</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-100 pb-1">
+            <span class="text-gray-500">Tanggal:</span>
+            <span id="vkTanggal">-</span>
+          </div>
+        </div>
+
+        <!-- Rincian Zakat & Infak -->
+        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-[11px] space-y-1">
+          <span class="font-bold text-gray-500 block uppercase text-[10px]">Rincian Pembayaran:</span>
+          <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span class="font-bold" id="vkJiwa">0 Jiwa</span></div>
+          <div class="flex justify-between"><span>Jenis Zakat:</span> <span class="font-bold text-teal-800" id="vkJenis">Uang</span></div>
+          <div class="flex justify-between" id="rowVkZakat"><span>Total Zakat:</span> <span class="font-bold" id="vkZakat">Rp 0</span></div>
+          <div class="flex justify-between" id="rowVkInfakBeras"><span>Infak Beras:</span> <span class="font-bold text-amber-700" id="vkInfakBeras">0 Kg</span></div>
+          <div class="flex justify-between" id="rowVkInfakUang"><span>Infak Uang:</span> <span class="font-bold text-amber-700" id="vkInfakUang">Rp 0</span></div>
+          <div class="flex justify-between border-t border-slate-100 pt-1 font-bold text-teal-800 text-xs">
+            <span>TOTAL BAYAR:</span> <span id="vkTotal">Rp 0</span>
+          </div>
+        </div>
+
+        <div class="text-[10px] italic text-teal-800 bg-teal-50/60 p-2 rounded-lg border border-teal-100 text-center">
+          <p>"Barakallahu lakum fii ma a'thaitum, wa baaraka fiima abqaita..."</p>
+          <p class="text-[9px] text-gray-500 not-italic mt-0.5">Petugas Amil: <span id="vkAmil" class="font-bold"></span></p>
+        </div>
+      </div>
+
+      <!-- Tombol Aksi Kuitansi Visual -->
+      <div class="space-y-2 pt-1">
+        <button type="button" onclick="downloadGambarKuitansi()" 
+          class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer flex items-center justify-center gap-1.5">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          Download Gambar Kuitansi
+        </button>
+        <button type="button" onclick="kirimWaDariModal()" 
+          class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer flex items-center justify-center gap-1.5">
+          Kirim Kuitansi & Teks via WA
+        </button>
+      </div>
     </div>
   </div>
 
@@ -239,6 +281,7 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbyHt0yFqUiJ4P4zMWNbzhJfJzNumxQ2r9MTwaWMhdq7N_JHt7LqmhGju_nqXFhzmTAw/exec";
     let globalConfig = {};
     let semuaTransaksiCache = [];
+    let currentModalData = {};
 
     async function prosesLoginAmil() {
       const pass = document.getElementById("inputPasswordAmil").value.trim();
@@ -468,9 +511,7 @@
           if (infakBerasKg > 0) infakHtml.push(`<span class="text-[10px] text-amber-600 block">Infak Beras: ${infakBerasKg} Kg</span>`);
           if (infakUangRp > 0) infakHtml.push(`<span class="text-[10px] text-amber-600 block">Infak Uang: Rp ${infakUangRp.toLocaleString('id-ID')}</span>`);
           
-          let infakTextHtml = infakHtml.length > 0 
-            ? infakHtml.join('')
-            : `<span class="text-[10px] text-slate-400 block">Tanpa Infak</span>`;
+          let infakTextHtml = infakHtml.length > 0 ? infakHtml.join('') : `<span class="text-[10px] text-slate-400 block">Tanpa Infak</span>`;
           
           infoBayarHtml = `
             <span class="block font-bold text-teal-900 whitespace-nowrap">${jenis} (${jumlahKg} Kg)</span>
@@ -507,9 +548,9 @@
               class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Edit">
               Edit
             </button>
-            <button type="button" onclick="cetakStruk('${formattedDate}', '${idTx}', '${nama}', '${alamat}', ${jiwa}, '${jenis}', ${zakatUang}, ${infakBerasKg}, ${infakUangRp}, ${totalBayar}, '${amil}')" 
-              class="bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Cetak Kuitansi">
-              Cetak
+            <button type="button" onclick="bukaModalKuitansiVisual('${formattedDate}', '${idTx}', '${nama}', '${alamat}', '${noWa}', ${jiwa}, '${jenis}', ${zakatUang}, ${infakBerasKg}, ${infakUangRp}, ${totalBayar}, '${amil}')" 
+              class="bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Kuitansi Digital">
+              Kuitansi
             </button>
             <button type="button" onclick="kirimWa('${noWa}', '${idTx}', '${formattedDate}', '${nama}', '${alamat}', ${jiwa}, '${jenis}', ${zakatUang}, ${infakBerasKg}, ${infakUangRp}, ${totalBayar}, '${amil}')" 
               class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Kirim WA">
@@ -524,28 +565,59 @@
       updateStatistikUI(totalJiwaAll, totalUangZakatAll, totalSemuaBerasKg, totalInfakUangAll);
     }
 
-    function cetakStruk(tgl, id, nama, alamat, jiwa, jenis, zakatUang, infakBerasKg, infakUangRp, total, amil) {
-      document.getElementById("pId").innerText = id;
-      document.getElementById("pTgl").innerText = tgl;
-      document.getElementById("pNama").innerText = nama;
-      document.getElementById("pAlamat").innerText = alamat;
-      document.getElementById("pJiwa").innerText = jiwa + " Jiwa";
-      document.getElementById("pJenis").innerText = jenis;
-      
-      if (jenis.includes("Beras")) {
-        document.getElementById("pZakat").innerText = (jiwa * 2.5) + " Kg Beras";
-        document.getElementById("pInfakBeras").innerText = infakBerasKg > 0 ? infakBerasKg + " Kg" : "-";
-        document.getElementById("pInfakUang").innerText = infakUangRp > 0 ? "Rp " + infakUangRp.toLocaleString('id-ID') : "-";
-        document.getElementById("pTotal").innerText = (jiwa * 2.5) + " Kg Beras" + (infakUangRp > 0 ? " + Rp " + infakUangRp.toLocaleString('id-ID') : "");
-      } else {
-        document.getElementById("pZakat").innerText = "Rp " + zakatUang.toLocaleString('id-ID');
-        document.getElementById("pInfakBeras").innerText = "-";
-        document.getElementById("pInfakUang").innerText = infakUangRp > 0 ? "Rp " + infakUangRp.toLocaleString('id-ID') : "-";
-        document.getElementById("pTotal").innerText = "Rp " + total.toLocaleString('id-ID');
-      }
-      document.getElementById("pAmil").innerText = amil;
+    function bukaModalKuitansiVisual(tgl, id, nama, alamat, noWa, jiwa, jenis, zakatUang, infakBerasKg, infakUangRp, total, amil) {
+      currentModalData = { tgl, id, nama, alamat, noWa, jiwa, jenis, zakatUang, infakBerasKg, infakUangRp, total, amil };
 
-      window.print();
+      document.getElementById("vkId").innerText = id;
+      document.getElementById("vkNama").innerText = nama;
+      document.getElementById("vkAlamat").innerText = alamat;
+      document.getElementById("vkTanggal").innerText = tgl;
+      document.getElementById("vkJiwa").innerText = jiwa + " Jiwa";
+      document.getElementById("vkJenis").innerText = jenis;
+      document.getElementById("vkAmil").innerText = amil;
+
+      if (jenis.includes("Beras")) {
+        document.getElementById("rowVkZakat").style.display = "none";
+        document.getElementById("vkInfakBeras").innerText = infakBerasKg + " Kg";
+        document.getElementById("vkInfakUang").innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
+        document.getElementById("vkTotal").innerText = (jiwa * 2.5) + " Kg Beras" + (infakUangRp > 0 ? " + Rp " + infakUangRp.toLocaleString('id-ID') : "");
+      } else {
+        document.getElementById("rowVkZakat").style.display = "flex";
+        document.getElementById("vkZakat").innerText = "Rp " + zakatUang.toLocaleString('id-ID');
+        document.getElementById("vkInfakBeras").innerText = "-";
+        document.getElementById("vkInfakUang").innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
+        document.getElementById("vkTotal").innerText = "Rp " + total.toLocaleString('id-ID');
+      }
+
+      document.getElementById("modalKuitansiVisual").classList.remove("hidden");
+    }
+
+    function tutupModalKuitansi() {
+      document.getElementById("modalKuitansiVisual").classList.add("hidden");
+    }
+
+    async function downloadGambarKuitansi() {
+      const element = document.getElementById("areaKuitansiVisual");
+      try {
+        const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+        const imageLink = canvas.toDataURL("image/png");
+        
+        const link = document.createElement("a");
+        const namaFile = currentModalData.nama.replace(/[^a-zA-Z0-9]/g, '_') || "Muzakki";
+        link.download = `Kuitansi_Zakat_${currentModalData.id}_${namaFile}.png`;
+        link.href = imageLink;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        tampilkanAlert("Gambar kuitansi digital berhasil di-download!");
+      } catch (err) {
+        tampilkanAlert("Gagal mendownload kuitansi: " + err.message);
+      }
+    }
+
+    function kirimWaDariModal() {
+      kirimWa(currentModalData.noWa, currentModalData.id, currentModalData.tgl, currentModalData.nama, currentModalData.alamat, currentModalData.jiwa, currentModalData.jenis, currentModalData.zakatUang, currentModalData.infakBerasKg, currentModalData.infakUangRp, currentModalData.total, currentModalData.amil);
     }
 
     function kirimWa(noWa, id, tgl, nama, alamat, jiwa, jenis, zakatUang, infakBerasKg, infakUangRp, total, amil) {
@@ -561,8 +633,8 @@
       }
 
       let rincianInfak = "";
-      if (infakBerasKg > 0) rincianInfak += `*Infak Beras:* ${infakBerasKg} Kg\n`;
-      if (infakUangRp > 0) rincianInfak += `*Infak Uang:* Rp ${infakUangRp.toLocaleString('id-ID')}\n`;
+      if (infakBerasKg > 0) rincianInfak += `• *Infak Beras:* ${infakBerasKg} Kg\n`;
+      if (infakUangRp > 0) rincianInfak += `• *Infak Uang:* Rp ${infakUangRp.toLocaleString('id-ID')}\n`;
 
       let pesan = `*KUITANSI DIGITAL ZAKAT FITRAH*\n*LAZMU Masjid Utsman bin Affan*\n\n` +
                   `ID Transaksi: *${id}*\n` +

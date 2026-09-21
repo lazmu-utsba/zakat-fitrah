@@ -363,16 +363,16 @@
     function renderTabelDanStatistik(listData) {
       let totalJiwaAll = 0;
       let totalUangZakatAll = 0;
-      let totalBerasAll = 0;
+      let totalBerasZakatAll = 0;
+      let totalInfakBerasAll = 0;
       let totalInfakAll = 0;
-      let totalInfakBerasAll = 0; // Rekap khusus infak beras (Kg)
 
       const tbody = document.getElementById("tabelTransaksiBody");
       tbody.innerHTML = "";
 
       if (listData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data transaksi tercatat.</td></tr>`;
-        updateStatistikUI(0, 0, 0, 0, 0);
+        updateStatistikUI(0, 0, 0, 0);
         return;
       }
 
@@ -413,23 +413,17 @@
         let infoBayarHtml = "";
         if (jenis.includes("Beras")) {
           const jumlahKg = jiwa * 2.5;
-          totalBerasAll += jumlahKg;
+          totalBerasZakatAll += jumlahKg;
           
-          // Deteksi jika ada infak beras (kita simpan/baca dari kolom infak atau catatan khusus)
-          // Asumsi jika pembayaran Beras, nilai infak di database kita manfaatkan atau kita deteksi dari nominal
-          // Supaya murni Kg, kita bisa cek jika infak bernilai sebagai kg (jika disimpan di backend) atau kita sesuaikan:
-          // Di sini kita asumsikan kolom infak berisi angka kg jika jenis beras, atau kita tampilkan sesuai data.
-          // Mari kita buat supaya teks infak beras tampil murni "X Kg"
           let infakBerasKg = 0;
-          if (infak > 0) {
-            // Jika tersimpan sebagai rupiah konversi sebelumnya, kita bisa tampilkan langsung atau asumsikan angka kecil sebagai Kg
-            // Lebih akurat: kita simpan nilai kg langsung jika diinput amil. Mari kita sesuaikan fungsi simpan di bawah.
-            infakBerasKg = infak < 100 ? infak : 0; // kalau < 100 kita anggap kg
+          if (infak > 0 && infak < 100) {
+            infakBerasKg = infak;
+            totalInfakBerasAll += infakBerasKg;
           }
-
+          
           infoBayarHtml = `
             <span class="block font-bold text-teal-900 whitespace-nowrap">${jenis} (${jumlahKg} Kg)</span>
-            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak Beras/Sedekah: ${infak} Kg</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
+            ${infakBerasKg > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak Beras/Sedekah: ${infakBerasKg} Kg</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
           `;
         } else {
           totalUangZakatAll += zakatUang;
@@ -469,7 +463,8 @@
         tbody.appendChild(tr);
       }
 
-      updateStatistikUI(totalJiwaAll, totalUangZakatAll, totalBerasAll, totalInfakAll);
+      const totalSemuaBerasKg = totalBerasZakatAll + totalInfakBerasAll;
+      updateStatistikUI(totalJiwaAll, totalUangZakatAll, totalSemuaBerasKg, totalInfakAll);
     }
 
     function updateStatistikUI(jiwa, uang, beras, infak) {
@@ -518,7 +513,7 @@
       
       let infak = 0;
       if (jenis === "Beras (Langsung)") {
-        infak = parseFloat(document.getElementById("offlineInfakBerasKg").value) || 0; // Simpan angka Kg langsung
+        infak = parseFloat(document.getElementById("offlineInfakBerasKg").value) || 0;
       } else {
         infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
       }

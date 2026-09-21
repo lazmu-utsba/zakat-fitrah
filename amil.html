@@ -630,7 +630,7 @@
       updateStatistikUI(totalJiwaAll, totalUangZakatAll, totalSemuaBerasKg, totalInfakUangAll);
     }
 
-    // Fungsi helper untuk render isi rincian kuitansi & cetak agar dinamis (Sembunyikan Infak Beras jika bukan zakat beras)
+    // Fungsi helper untuk render isi rincian kuitansi & cetak agar dinamis (Infak Beras & Infak Uang hanya muncul jika ada nilainya)
     function renderRincianKuitansi(isPrint, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total) {
       const prefix = isPrint ? "p" : "vk";
       
@@ -652,6 +652,7 @@
           if (rowInfakBeras) rowInfakBeras.style.display = "none";
         }
 
+        // Infak Uang pada zakat beras
         if (infakUangRp > 0) {
           if (rowInfakUang) rowInfakUang.style.display = "flex";
           document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
@@ -671,6 +672,7 @@
         // Sembunyikan total infak beras jika zakatnya uang
         if (rowInfakBeras) rowInfakBeras.style.display = "none";
 
+        // Infak Uang hanya muncul jika > 0
         if (infakUangRp > 0) {
           if (rowInfakUang) rowInfakUang.style.display = "flex";
           document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + infakUangRp.toLocaleString('id-ID');

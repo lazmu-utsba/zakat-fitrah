@@ -203,7 +203,7 @@
     </div>
   </div>
 
-  <!-- POP-UP MODAL KUITANSI DIGITAL VISUAL (Desain Elegan Terbaru Mengikuti kuitansi.html) -->
+  <!-- POP-UP MODAL KUITANSI DIGITAL VISUAL -->
   <div id="modalKuitansiVisual" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 my-auto border border-slate-100">
       <div class="flex justify-between items-center border-b pb-2">
@@ -254,7 +254,6 @@
           <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span class="font-bold" id="vkJiwa">0 Jiwa</span></div>
           <div class="flex justify-between"><span>Jenis Zakat:</span> <span class="font-bold text-[#0B7A6E]" id="vkJenis">Uang</span></div>
           <div class="flex justify-between" id="rowVkZakat"><span>Total Zakat:</span> <span class="font-bold" id="vkZakat">Rp 0</span></div>
-          <div class="flex justify-between" id="rowVkInfakBeras"><span>Infak Beras:</span> <span class="font-bold text-amber-700" id="vkInfakBeras">0 Kg</span></div>
           <div class="flex justify-between" id="rowVkInfakUang"><span>Infak Uang:</span> <span class="font-bold text-amber-700" id="vkInfakUang">Rp 0</span></div>
           <div class="flex justify-between border-t border-[#C29B46]/20 pt-1.5 font-bold text-[#0B7A6E] text-xs">
             <span>TOTAL BAYAR:</span> <span id="vkTotal">Rp 0</span>
@@ -328,7 +327,6 @@
       <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span class="font-bold" id="pJiwa">0 Jiwa</span></div>
       <div class="flex justify-between"><span>Jenis Zakat:</span> <span class="font-bold text-teal-800" id="pJenis">Uang</span></div>
       <div class="flex justify-between" id="rowPZakat"><span>Total Zakat:</span> <span class="font-bold" id="pZakat">Rp 0</span></div>
-      <div class="flex justify-between" id="rowPInfakBeras"><span>Infak Beras:</span> <span class="font-bold text-amber-700" id="pInfakBeras">0 Kg</span></div>
       <div class="flex justify-between" id="rowPInfakUang"><span>Infak Uang:</span> <span class="font-bold text-amber-700" id="pInfakUang">Rp 0</span></div>
       <div class="flex justify-between border-t border-slate-200 pt-1 font-bold text-teal-800 text-xs">
         <span>TOTAL BAYAR:</span> <span id="pTotal">Rp 0</span>
@@ -478,9 +476,9 @@
         const infakBerasKg = parseFloat(document.getElementById("offlineInfakBerasKg").value) || 0;
         document.getElementById("txtOfflineZakat").innerText = `${totalBerasWajib} Kg Beras`;
         
-        let txtRincian = `${totalBerasWajib} Kg Beras`;
-        if (infakBerasKg > 0) txtRincian += ` + Infak Beras ${infakBerasKg} Kg`;
-        if (infakUang > 0) txtRincian += ` + Infak Uang Rp ${infakUang.toLocaleString('id-ID')}`;
+        let gabungBeras = totalBerasWajib + infakBerasKg;
+        let txtRincian = `${gabungBeras} Kg Beras`;
+        if (infakUang > 0) txtRincian += ` + Rp ${infakUang.toLocaleString('id-ID')}`;
         document.getElementById("txtOfflineTotal").innerText = txtRincian;
       } else {
         document.getElementById("txtOfflineZakat").innerText = `Rp ${totalZakat.toLocaleString('id-ID')}`;
@@ -586,14 +584,14 @@
           const jumlahKg = jiwa * 2.5;
           totalBerasZakatAll += jumlahKg;
           
+          let gabungBeras = jumlahKg + infakBerasKg;
           let infakHtml = [];
-          if (infakBerasKg > 0) infakHtml.push(`<span class="text-[10px] text-amber-600 block">Infak Beras: ${infakBerasKg} Kg</span>`);
           if (infakUangRp > 0) infakHtml.push(`<span class="text-[10px] text-amber-600 block">Infak Uang: Rp ${infakUangRp.toLocaleString('id-ID')}</span>`);
           
-          let infakTextHtml = infakHtml.length > 0 ? infakHtml.join('') : `<span class="text-[10px] text-slate-400 block">Tanpa Infak</span>`;
+          let infakTextHtml = infakHtml.length > 0 ? infakHtml.join('') : `<span class="text-[10px] text-slate-400 block">Tanpa Infak Uang</span>`;
           
           infoBayarHtml = `
-            <span class="block font-bold text-teal-900 whitespace-nowrap">${jenis} (${jumlahKg} Kg)</span>
+            <span class="block font-bold text-teal-900 whitespace-nowrap">${gabungBeras} Kg Beras</span>
             ${infakTextHtml}
           `;
         } else {
@@ -651,7 +649,6 @@
       document.getElementById(`${prefix}Jenis`).innerText = jenis;
 
       const rowZakat = document.getElementById(`row${isPrint ? 'P' : 'Vk'}Zakat`);
-      const rowInfakBeras = document.getElementById(`row${isPrint ? 'P' : 'Vk'}InfakBeras`);
       const rowInfakUang = document.getElementById(`row${isPrint ? 'P' : 'Vk'}InfakUang`);
 
       const nBeras = parseFloat(infakBerasKg) || 0;
@@ -660,13 +657,7 @@
       if (jenis.includes("Beras")) {
         if (rowZakat) rowZakat.style.display = "none";
         
-        if (nBeras > 0) {
-          if (rowInfakBeras) rowInfakBeras.style.display = "flex";
-          document.getElementById(`${prefix}InfakBeras`).innerText = nBeras + " Kg";
-        } else {
-          if (rowInfakBeras) rowInfakBeras.style.display = "none";
-        }
-
+        // Infak Beras disembunyikan baris khususnya, karena sudah digabung langsung di TOTAL BAYAR
         if (nUang > 0) {
           if (rowInfakUang) rowInfakUang.style.display = "flex";
           document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + nUang.toLocaleString('id-ID');
@@ -674,16 +665,17 @@
           if (rowInfakUang) rowInfakUang.style.display = "none";
         }
 
-        let totalText = (jiwa * 2.5) + " Kg Beras";
-        if (nBeras > 0) totalText += ` + ${nBeras} Kg Infak Beras`;
-        if (nUang > 0) totalText += ` + Rp ${nUang.toLocaleString('id-ID')}`;
+        let totalBerasWajib = jiwa * 2.5;
+        let gabungBeras = totalBerasWajib + nBeras;
+        let totalText = `${gabungBeras} Kg Beras`;
+        if (nUang > 0) {
+          totalText += ` + Rp ${nUang.toLocaleString('id-ID')}`;
+        }
         document.getElementById(`${prefix}Total`).innerText = totalText;
 
       } else {
         if (rowZakat) rowZakat.style.display = "flex";
         document.getElementById(`${prefix}Zakat`).innerText = "Rp " + (parseInt(zakatUang) || 0).toLocaleString('id-ID');
-
-        if (rowInfakBeras) rowInfakBeras.style.display = "none";
 
         if (nUang > 0) {
           if (rowInfakUang) rowInfakUang.style.display = "flex";
@@ -706,7 +698,6 @@
       document.getElementById("vkTanggal").innerText = tgl;
       document.getElementById("vkAmil").innerText = amil;
 
-      // Generate QR Code otomatis berdasarkan ID Transaksi
       const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" + encodeURIComponent(id);
       document.getElementById("vkQrImg").src = qrUrl;
 
@@ -747,7 +738,6 @@
       try {
         const canvasAsli = await html2canvas(element, { scale: 2, useCORS: true });
         
-        // Menambahkan padding space di sekeliling gambar biar tidak mepet border saat didownload
         const paddingSpace = 10;
         const canvasBaru = document.createElement("canvas");
         canvasBaru.width = canvasAsli.width + (paddingSpace * 2);
@@ -793,11 +783,16 @@
         formatNo = '62' + formatNo.substring(1);
       }
 
-      let rincianInfak = "";
+      let teksTotal = "";
       const nBeras = parseFloat(infakBerasKg) || 0;
       const nUang = parseFloat(infakUangRp) || 0;
-      if (nBeras > 0) rincianInfak += `• *Infak Beras:* ${nBeras} Kg\n`;
-      if (nUang > 0) rincianInfak += `• *Infak Uang:* Rp ${nUang.toLocaleString('id-ID')}\n`;
+      if (jenis.includes('Beras')) {
+        let gabungBeras = (jiwa * 2.5) + nBeras;
+        teksTotal = `${gabungBeras} Kg Beras`;
+        if (nUang > 0) teksTotal += ` + Rp ${nUang.toLocaleString('id-ID')}`;
+      } else {
+        teksTotal = `Rp ${total.toLocaleString('id-ID')}`;
+      }
 
       let pesan = `*KUITANSI DIGITAL ZAKAT FITRAH*\n*LAZMU Masjid Utsman bin Affan*\n\n` +
                   `ID Transaksi: *${id}*\n` +
@@ -806,8 +801,7 @@
                   `Alamat: ${alamat}\n` +
                   `Jumlah Jiwa: ${jiwa} Jiwa\n` +
                   `Jenis Pembayaran: *${jenis}*\n` +
-                  `${rincianInfak}` +
-                  `Total Bayar: *${jenis.includes('Beras') ? (jiwa*2.5)+' Kg Beras'+(nUang>0?' + Rp '+nUang.toLocaleString('id-ID'):''):'Rp '+total.toLocaleString('id-ID')}*\n\n` +
+                  `Total Bayar: *${teksTotal}*\n\n` +
                   `Petugas Amil: ${amil}\n\n` +
                   `_“Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura.”_`;
 

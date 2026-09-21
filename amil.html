@@ -211,8 +211,8 @@
         <button type="button" onclick="tutupModalKuitansi()" class="text-slate-400 hover:text-red-600 font-bold text-sm">✕</button>
       </div>
 
-      <!-- AREA GAMBAR KUITANSI (Padding ditambah jadi p-6 biar longgar/tidak mepet border) -->
-      <div id="areaKuitansiVisual" class="p-6 bg-white border-2 border-slate-300 rounded-xl text-left space-y-4">
+      <!-- AREA GAMBAR KUITANSI (Padding p-6 meniru persis kuitansi.html biar longgar & tidak mepet border) -->
+      <div id="areaKuitansiVisual" class="p-6 bg-amber-50/30 border-2 border-dashed border-amber-200 rounded-xl text-left space-y-4">
         <div class="border-b border-slate-300 pb-3 text-center">
           <div class="flex justify-center mb-2">
             <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-10 object-contain">
@@ -221,19 +221,19 @@
         </div>
 
         <div class="text-[11px] space-y-1.5 text-gray-800 font-medium">
-          <div class="flex justify-between border-b border-slate-200 pb-1.5">
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
             <span class="text-gray-500">ID Transaksi:</span>
             <span class="font-bold text-teal-900" id="vkId">-</span>
           </div>
-          <div class="flex justify-between border-b border-slate-200 pb-1.5">
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
             <span class="text-gray-500">Muzakki:</span>
             <span class="font-bold uppercase" id="vkNama">-</span>
           </div>
-          <div class="flex justify-between border-b border-slate-200 pb-1.5">
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
             <span class="text-gray-500">Alamat:</span>
             <span id="vkAlamat" class="uppercase">-</span>
           </div>
-          <div class="flex justify-between border-b border-slate-200 pb-1.5">
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
             <span class="text-gray-500">Tanggal:</span>
             <span id="vkTanggal">-</span>
           </div>
@@ -253,10 +253,10 @@
         </div>
 
         <!-- DOA LENGKAP -->
-        <div class="text-[10px] text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-center space-y-1">
-          <p class="italic font-medium">"Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura."</p>
-          <p class="text-[9px] text-slate-500 leading-tight">(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)</p>
-          <p class="text-[9px] text-slate-600 not-italic pt-1.5 border-t border-slate-200">Petugas Amil: <span id="vkAmil" class="font-bold"></span></p>
+        <div class="text-[10px] italic text-teal-800 bg-teal-50/60 p-2.5 rounded-lg border border-teal-100 space-y-1">
+          <p class="font-medium text-center">"Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura."</p>
+          <p class="text-[9px] text-gray-500 text-center not-italic leading-tight">(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)</p>
+          <p class="text-[9px] text-slate-600 not-italic pt-1.5 border-t border-teal-100/60 text-center">Petugas Amil: <span id="vkAmil" class="font-bold"></span></p>
         </div>
       </div>
 
@@ -279,7 +279,7 @@
     </div>
   </div>
 
-  <!-- AREA CETAK FISIK (PERSIS SAMA DENGAN TAMPILAN KUITANSI VISUAL) -->
+  <!-- AREA CETAK FISIK -->
   <div id="printArea" class="hidden p-6 max-w-sm mx-auto bg-white text-slate-800 text-xs font-sans space-y-3 border-2 border-slate-300 rounded-xl">
     <div class="border-b border-slate-300 pb-2 text-center">
       <div class="flex justify-center mb-1.5">
@@ -307,7 +307,6 @@
       </div>
     </div>
 
-    <!-- Rincian Zakat & Infak Cetak -->
     <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-[11px] space-y-1">
       <span class="font-bold text-gray-500 block uppercase text-[10px]">Rincian Pembayaran:</span>
       <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span class="font-bold" id="pJiwa">0 Jiwa</span></div>
@@ -320,7 +319,6 @@
       </div>
     </div>
 
-    <!-- DOA LENGKAP CETAK -->
     <div class="text-[10px] text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-200 text-center space-y-1">
       <p class="italic font-medium">"Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura."</p>
       <p class="text-[9px] text-slate-500 leading-tight">(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)</p>
@@ -630,7 +628,6 @@
       updateStatistikUI(totalJiwaAll, totalUangZakatAll, totalSemuaBerasKg, totalInfakUangAll);
     }
 
-    // Fungsi helper render kuitansi & cetak (Infak Uang disembunyikan jika 0, Infak Beras disembunyikan jika zakat uang)
     function renderRincianKuitansi(isPrint, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total) {
       const prefix = isPrint ? "p" : "vk";
       
@@ -670,10 +667,8 @@
         if (rowZakat) rowZakat.style.display = "flex";
         document.getElementById(`${prefix}Zakat`).innerText = "Rp " + (parseInt(zakatUang) || 0).toLocaleString('id-ID');
 
-        // Infak Beras WAJIB disembunyikan total jika zakatnya uang
         if (rowInfakBeras) rowInfakBeras.style.display = "none";
 
-        // Infak Uang MUNCUL jika > 0, DISEMBUNYIKAN jika 0
         if (nUang > 0) {
           if (rowInfakUang) rowInfakUang.style.display = "flex";
           document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + nUang.toLocaleString('id-ID');

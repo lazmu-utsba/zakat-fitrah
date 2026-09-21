@@ -65,9 +65,15 @@
     <!-- GRID UTAMA: FORM INPUT OFFLINE & STATISTIK -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       
-      <!-- KOLOM KIRI: FORM INPUT POSKO -->
+      <!-- KOLOM KIRI: FORM INPUT / EDIT POSKO -->
       <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-1 space-y-3">
-        <h2 class="text-xs font-bold text-teal-800 uppercase border-b pb-2">Input Zakat Offline (Posko)</h2>
+        <div class="flex justify-between items-center border-b pb-2">
+          <h2 id="formTitle" class="text-xs font-bold text-teal-800 uppercase">Input Zakat Offline (Posko)</h2>
+          <button type="button" id="btnBatalEdit" onclick="resetFormMode()" class="hidden text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded-lg transition">Batal Edit</button>
+        </div>
+
+        <!-- Hidden ID untuk Mode Edit -->
+        <input type="hidden" id="editIdTransaksi" value="">
 
         <!-- Petugas Amil -->
         <label class="block text-xs font-semibold text-gray-700 mb-1">Petugas Amil yang Bertugas</label>
@@ -105,14 +111,14 @@
             class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <!-- Wrapper Infak Uang (Selalu muncul, fleksibel untuk Uang atau Beras) -->
+        <!-- Wrapper Infak Uang -->
         <div id="wrapperInfakUang" class="mb-2">
           <label class="block text-xs font-semibold text-gray-700 mb-1">Infak / Sedekah Uang (Opsional)</label>
           <input type="text" id="offlineInfak" placeholder="0" oninput="formatRupiahMasking(this); hitungTotalOffline();"
             class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <!-- Wrapper Infak Beras (Hanya muncul jika bayar Beras) -->
+        <!-- Wrapper Infak Beras -->
         <div id="wrapperInfakBeras" class="hidden mb-3">
           <label class="block text-xs font-semibold text-amber-700 mb-1">Infak Beras / Sedekah (Kg)</label>
           <div class="flex items-center">
@@ -129,7 +135,7 @@
           <div class="flex justify-between"><span>Total Bayar:</span><span id="txtOfflineTotal" class="font-bold text-teal-700">Rp 45.000</span></div>
         </div>
 
-        <button type="button" onclick="simpanTransaksiOffline()" id="btnSimpanOffline"
+        <button type="button" onclick="simpanAtauUpdateTransaksi()" id="btnSimpanOffline"
           class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer">
           Simpan Transaksi Posko
         </button>
@@ -175,7 +181,7 @@
                 <th class="p-2.5 text-center">Jiwa</th>
                 <th class="p-2.5">Jenis / Bayar</th>
                 <th class="p-2.5">Amil</th>
-                <th class="p-2.5">Status</th>
+                <th class="p-2.5 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody id="tabelTransaksiBody" class="divide-y divide-slate-100">
@@ -243,7 +249,6 @@
 
           loadAmilDashboardData();
 
-          // Auto-Refresh tiap 5 Detik
           setInterval(() => {
             loadAmilDashboardData(true);
           }, 5000);
@@ -288,7 +293,6 @@
     function toggleJenisBayarOffline() {
       const jenis = document.getElementById("offlineJenisBayar").value;
       const wrapperCustom = document.getElementById("wrapperCustomOffline");
-      const wrapperInfakUang = document.getElementById("wrapperInfakUang");
       const wrapperInfakBeras = document.getElementById("wrapperInfakBeras");
 
       if (jenis === "Uang (Custom)") {
@@ -297,7 +301,6 @@
         wrapperCustom.classList.add("hidden");
       }
 
-      // Jika bayar Beras, tampilkan input infak beras KG. Infak uang tetap bisa muncul/opsional jika muzakki mau nambah uang.
       if (jenis === "Beras (Langsung)") {
         wrapperInfakBeras.classList.remove("hidden");
       } else {
@@ -420,6 +423,7 @@
         const alamat = row[3] || "-";
         const jiwa = parseInt(row[4], 10) || 0;
         const jenis = row[5] || "-";
+        const hargaSatuan = parseInt(row[6], 10) || 0;
         const zakatUang = parseInt(row[7], 10) || 0;
         const infak = parseInt(row[8], 10) || 0;
         const amil = row[10] || "-";
@@ -459,11 +463,6 @@
           `;
         }
 
-        let badgeClass = "bg-teal-50 text-teal-700 border-teal-200";
-        if (status.includes("Menunggu")) {
-          badgeClass = "bg-amber-50 text-amber-700 border-amber-200";
-        }
-
         const tr = document.createElement("tr");
         tr.className = "hover:bg-slate-50 transition align-top";
         tr.innerHTML = `
@@ -480,8 +479,11 @@
             ${infoBayarHtml}
           </td>
           <td class="p-2.5 border-b border-slate-100 text-slate-600 font-medium whitespace-nowrap">${amil}</td>
-          <td class="p-2.5 border-b border-slate-100">
-            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold inline-block border whitespace-nowrap ${badgeClass}">${status}</span>
+          <td class="p-2.5 border-b border-slate-100 text-center">
+            <button type="button" onclick="siapkanEditTransaksi('${idTx}', '${nama}', '${alamat}', ${jiwa}, '${jenis}', ${hargaSatuan}, ${infak}, '${amil}')" 
+              class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer">
+              Edit
+            </button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -489,6 +491,62 @@
 
       const totalSemuaBerasKg = totalBerasZakatAll + totalInfakBerasAll;
       updateStatistikUI(totalJiwaAll, totalUangZakatAll, totalSemuaBerasKg, totalInfakAll);
+    }
+
+    function siapkanEditTransaksi(id, nama, alamat, jiwa, jenis, hargaSatuan, infak, amil) {
+      document.getElementById("editIdTransaksi").value = id;
+      document.getElementById("offlineNama").value = nama;
+      document.getElementById("offlineAlamat").value = alamat;
+      document.getElementById("offlineJiwa").value = jiwa;
+      document.getElementById("offlineJenisBayar").value = jenis;
+      document.getElementById("inputPetugasAmil").value = amil;
+
+      toggleJenisBayarOffline();
+
+      if (jenis === "Uang (Custom)") {
+        document.getElementById("offlineCustomHarga").value = hargaSatuan.toLocaleString('id-ID');
+      }
+
+      if (jenis === "Beras (Langsung)") {
+        if (infak > 0 && infak < 100) {
+          document.getElementById("offlineInfakBerasKg").value = infak;
+          document.getElementById("offlineInfak").value = "";
+        } else if (infak >= 100) {
+          document.getElementById("offlineInfak").value = infak.toLocaleString('id-ID');
+          document.getElementById("offlineInfakBerasKg").value = "0";
+        }
+      } else {
+        document.getElementById("offlineInfak").value = infak > 0 ? infak.toLocaleString('id-ID') : "";
+      }
+
+      hitungTotalOffline();
+
+      document.getElementById("formTitle").innerText = "Edit Transaksi: " + id;
+      document.getElementById("btnBatalEdit").classList.remove("hidden");
+      const btnSimpan = document.getElementById("btnSimpanOffline");
+      btnSimpan.innerText = "Update Transaksi";
+      btnSimpan.className = "w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer";
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetFormMode() {
+      document.getElementById("editIdTransaksi").value = "";
+      document.getElementById("offlineNama").value = "";
+      document.getElementById("offlineAlamat").value = "";
+      document.getElementById("offlineJiwa").value = "1";
+      document.getElementById("offlineInfak").value = "";
+      document.getElementById("offlineInfakBerasKg").value = "0";
+      document.getElementById("offlineCustomHarga").value = "";
+      document.getElementById("offlineJenisBayar").value = "Uang (Reguler)";
+      toggleJenisBayarOffline();
+
+      document.getElementById("formTitle").innerText = "Input Zakat Offline (Posko)";
+      document.getElementById("btnBatalEdit").classList.add("hidden");
+      const btnSimpan = document.getElementById("btnSimpanOffline");
+      btnSimpan.innerText = "Simpan Transaksi Posko";
+      btnSimpan.className = "w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer";
+      hitungTotalOffline();
     }
 
     function updateStatistikUI(jiwa, uang, beras, infak) {
@@ -507,6 +565,15 @@
         return nama.includes(keyword) || idTx.includes(keyword) || alamat.includes(keyword);
       });
       renderTabelDanStatistik(filtered);
+    }
+
+    async function simpanAtauUpdateTransaksi() {
+      const editId = document.getElementById("editIdTransaksi").value;
+      if (editId) {
+        processUpdateTransaksi(editId);
+      } else {
+        simpanTransaksiOffline();
+      }
     }
 
     async function simpanTransaksiOffline() {
@@ -539,8 +606,6 @@
       if (jenis === "Beras (Langsung)") {
         const infakBerasKg = parseInt(document.getElementById("offlineInfakBerasKg").value, 10) || 0;
         const infakUangTambahan = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
-        
-        // Prioritas: jika amil ngisi infak beras kg, pakai itu. Jika ngisi infak uang, pakai itu.
         infak = infakBerasKg > 0 ? infakBerasKg : infakUangTambahan;
       } else {
         infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
@@ -577,12 +642,7 @@
 
         if (result.status === "success") {
           tampilkanAlert("Transaksi posko offline berhasil disimpan!");
-          document.getElementById("offlineNama").value = "";
-          document.getElementById("offlineAlamat").value = "";
-          document.getElementById("offlineJiwa").value = "1";
-          document.getElementById("offlineInfak").value = "";
-          document.getElementById("offlineInfakBerasKg").value = "0";
-          hitungTotalOffline();
+          resetFormMode();
           loadAmilDashboardData();
         } else {
           tampilkanAlert("Gagal: " + result.message);
@@ -592,6 +652,81 @@
       } finally {
         btn.disabled = false;
         btn.innerText = "Simpan Transaksi Posko";
+      }
+    }
+
+    async function processUpdateTransaksi(idTx) {
+      const nama = document.getElementById("offlineNama").value.trim().toUpperCase();
+      const alamat = document.getElementById("offlineAlamat").value.trim().toUpperCase();
+      const jiwa = parseInt(document.getElementById("offlineJiwa").value, 10) || 1;
+      const petugas = document.getElementById("inputPetugasAmil").value;
+      const jenis = document.getElementById("offlineJenisBayar").value;
+
+      if (!nama || !alamat) {
+        tampilkanAlert("Nama Muzakki dan Alamat wajib diisi.");
+        return;
+      }
+
+      let hargaSatuan = parseInt(globalConfig.STANDAR_HARGA_BERAS, 10) || 45000;
+      if (jenis === "Uang (Custom)") {
+        hargaSatuan = parseInt(document.getElementById("offlineCustomHarga").value.replace(/\./g, ''), 10) || 0;
+      } else if (jenis === "Beras (Langsung)") {
+        hargaSatuan = 0;
+      }
+
+      const totalZakat = jenis === "Beras (Langsung)" ? 0 : (jiwa * hargaSatuan);
+      
+      let infak = 0;
+      if (jenis === "Beras (Langsung)") {
+        const infakBerasKg = parseInt(document.getElementById("offlineInfakBerasKg").value, 10) || 0;
+        const infakUangTambahan = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
+        infak = infakBerasKg > 0 ? infakBerasKg : infakUangTambahan;
+      } else {
+        infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
+      }
+
+      const totalBayar = totalZakat + infak;
+
+      const btn = document.getElementById("btnSimpanOffline");
+      btn.disabled = true;
+      btn.innerText = "Mengupdate...";
+
+      try {
+        const payload = {
+          action: "updateTransaksi",
+          secretCode: "z9X!mQ7#pL2$vW8@kX4%nR3&bT6*yH5",
+          idTransaksi: idTx,
+          namaMuzakki: nama,
+          alamat: alamat,
+          jumlahJiwa: jiwa,
+          jenisBayar: jenis,
+          hargaSatuan: hargaSatuan,
+          totalZakat: totalZakat,
+          infakOpsional: infak,
+          totalBayar: totalBayar,
+          petugasAmil: petugas,
+          statusKonfirmasi: "Lunas / Posko"
+        };
+
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.status === "success") {
+          tampilkanAlert("Data transaksi berhasil di-update!");
+          resetFormMode();
+          loadAmilDashboardData();
+        } else {
+          tampilkanAlert("Gagal update: " + result.message);
+        }
+      } catch (err) {
+        tampilkanAlert("Terjadi kesalahan sistem: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Update Transaksi";
       }
     }
   </script>

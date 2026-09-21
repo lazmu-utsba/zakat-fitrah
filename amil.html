@@ -49,7 +49,12 @@
         <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo" class="w-12 h-12 object-contain rounded-full border p-0.5">
         <div>
           <h1 class="text-sm font-bold text-teal-800">Panel Posko Amil Zakat Fitrah</h1>
-          <p class="text-[11px] text-slate-500">LAZMU Masjid Utsman bin Affan</p>
+          <p class="text-[11px] text-slate-500 flex items-center gap-1.5">
+            <span>LAZMU Masjid Utsman bin Affan</span>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-100 text-emerald-800">
+              <span class="w-1.5 h-1.5 mr-1 bg-emerald-500 rounded-full animate-pulse"></span> Auto-Sync Active
+            </span>
+          </p>
         </div>
       </div>
       <button type="button" onclick="location.reload()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold px-3 py-2 rounded-xl transition cursor-pointer">
@@ -222,7 +227,14 @@
             selectAmil.appendChild(opt);
           });
 
+          // Load data awal
           loadAmilDashboardData();
+
+          // AKTIFKAN AUTO-REFRESH (Sinkronisasi Otomatis setiap 5 Detik)
+          setInterval(() => {
+            loadAmilDashboardData(true); // true = silent background refresh (tanpa ganggu ketikan form)
+          }, 5000);
+
         } else {
           tampilkanAlert(data.message || "Password salah!");
         }
@@ -299,15 +311,19 @@
       input.value = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
     }
 
-    async function loadAmilDashboardData() {
+    async function loadAmilDashboardData(isSilent = false) {
       try {
-        const resConfig = await fetch(`${API_URL}?action=getConfig`);
-        const dataConfig = await resConfig.json();
-        if (dataConfig.status === "success") {
-          globalConfig = dataConfig.config;
-          hitungTotalOffline();
+        // Tarik Config (cukup sekali atau pas awal, tapi aman ditarik berkala)
+        if (!isSilent || Object.keys(globalConfig).length === 0) {
+          const resConfig = await fetch(`${API_URL}?action=getConfig`);
+          const dataConfig = await resConfig.json();
+          if (dataConfig.status === "success") {
+            globalConfig = dataConfig.config;
+            hitungTotalOffline();
+          }
         }
 
+        // Tarik Data Transaksi Terbaru
         const resTrans = await fetch(`${API_URL}?action=getTransaksi`);
         const dataTrans = await resTrans.json();
         if (dataTrans.status === "success") {
@@ -315,7 +331,7 @@
           renderTabelDanStatistik(semuaTransaksiCache);
         }
       } catch (e) {
-        console.error("Gagal load data dashboard", e);
+        console.error("Gagal auto-sync data dashboard", e);
       }
     }
 
@@ -337,7 +353,6 @@
       for (let i = listData.length - 1; i >= 0; i--) {
         const row = listData[i];
         
-        // Format Tanggal rapi (DD-MM-YYYY HH:mm:ss)
         let rawDate = row[0] || "";
         let formattedDate = rawDate;
         if (rawDate) {

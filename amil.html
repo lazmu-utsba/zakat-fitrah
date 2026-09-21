@@ -295,10 +295,10 @@
     </div>
   </div>
 
-  <!-- AREA CETAK FISIK (ATAS: KUITANSI MUZAKKI BER-QR + BAWAH: CATATAN ARSIP AMIL) -->
+  <!-- AREA CETAK FISIK (DOBEL: ATAS KUITANSI MUZAKKI + BAWAH ARSIP AMIL) -->
   <div id="printArea" class="hidden p-4 max-w-sm mx-auto bg-white text-slate-800 text-xs font-sans space-y-3 border border-slate-400 rounded-lg">
     
-    <!-- BAGIAN ATAS: KUITANSI MUZAKKI (TANPA BACKGROUND, ADA QR) -->
+    <!-- BAGIAN ATAS: KUITANSI MUZAKKI (BER-QR & DOA LENGKAP) -->
     <div class="text-center space-y-1 pb-2 border-b border-dashed border-slate-400">
       <div class="flex justify-center">
         <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-8 object-contain">
@@ -332,23 +332,27 @@
       </div>
     </div>
 
-    <div class="text-[9px] text-slate-600 bg-slate-50/50 p-1.5 rounded border border-slate-100 text-center italic">
-      "Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura."
+    <!-- DOA LENGKAP & PETUGAS AMIL UNTUK MUZAKKI -->
+    <div class="text-[9px] text-slate-700 bg-slate-50/50 p-2 rounded border border-slate-100 text-center space-y-1">
+      <p class="italic font-medium">"Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura."</p>
+      <p class="text-[8px] text-slate-500 leading-tight">(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)</p>
+      <p class="text-[8px] text-slate-700 font-semibold pt-1 border-t border-slate-200">Petugas Amil: <span id="pAmil" class="font-bold"></span></p>
     </div>
 
-    <!-- GARIS PUTUS-PUTUS PEMBATAS SOBEKAN -->
+    <!-- GARIS PEMBATAS PUTUS-PUTUS SOBEKAN -->
     <div class="text-center text-slate-400 font-mono text-[9px] tracking-widest my-2 select-none">
       -------------------------------------------------- (SOBEK DI SINI) --------------------------------------------------
     </div>
 
-    <!-- BAGIAN BAWAH: CATATAN ARSIP AMIL (TEKS SAJA, TANPA LOGO) -->
+    <!-- BAGIAN BAWAH: ARSIP / CATATAN BACKUP PETUGAS AMIL (ESTETIK & LENGKAP NAMA PETUGAS) -->
     <div class="text-[10px] space-y-1 text-slate-700 pt-1 px-1">
-      <p class="font-bold text-center uppercase tracking-wider text-slate-500 border-b border-slate-300 pb-1 mb-1">[ CATATAN BACKUP AMIL ]</p>
+      <div class="text-center font-bold tracking-wider text-slate-500 uppercase text-[9px] border-b border-dotted border-slate-300 pb-1 mb-1">
+        Arsip Rekap Petugas Posko
+      </div>
       <div class="flex justify-between"><span>ID Transaksi:</span> <span class="font-bold text-teal-900" id="pBackupId">-</span></div>
       <div class="flex justify-between"><span>Muzakki:</span> <span class="font-bold uppercase" id="pBackupNama">-</span></div>
       <div class="flex justify-between"><span>Alamat:</span> <span class="uppercase" id="pBackupAlamat">-</span></div>
       <div class="flex justify-between"><span>Tanggal:</span> <span id="pBackupTgl">-</span></div>
-      <div class="flex justify-between"><span>Petugas Amil:</span> <span class="font-semibold" id="pBackupAmil">-</span></div>
       
       <div class="border-t border-slate-200 pt-1 mt-1 space-y-0.5 font-medium">
         <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span id="pBackupJiwa">-</span></div>
@@ -358,6 +362,10 @@
         <div class="flex justify-between font-bold border-t border-slate-200 pt-0.5 text-teal-900">
           <span>TOTAL BAYAR:</span> <span id="pBackupTotal">-</span>
         </div>
+      </div>
+
+      <div class="pt-1 mt-1 border-t border-slate-200 text-[9px] font-semibold flex justify-between">
+        <span>Petugas Amil:</span> <span id="pBackupAmil" class="font-bold text-slate-800"></span>
       </div>
     </div>
 
@@ -740,13 +748,14 @@
       document.getElementById("pTgl").innerText = tgl;
       document.getElementById("pNama").innerText = nama;
       document.getElementById("pAlamat").innerText = alamat;
+      document.getElementById("pAmil").innerText = amil;
       
       const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" + encodeURIComponent(id);
       document.getElementById("pQrImg").src = qrUrl;
 
       renderRincianKuitansi(true, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total);
 
-      // 2. ISI BAGIAN BAWAH (CATATAN ARSIP AMIL / BACKUP)
+      // 2. ISI BAGIAN BAWAH (ARSIP PETUGAS AMIL)
       document.getElementById("pBackupId").innerText = id;
       document.getElementById("pBackupNama").innerText = nama;
       document.getElementById("pBackupAlamat").innerText = alamat;

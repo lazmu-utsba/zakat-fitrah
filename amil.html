@@ -11,27 +11,28 @@
   <style>
     @media print {
       @page {
-        margin: 0;
+        margin: 0.2cm; /* Sedikit margin agar tidak terpotong printer */
         size: auto;
       }
-      body, html {
+      /* Sembunyikan SEMUA elemen di dalam body KECUALI printArea */
+      body > :not(#printArea) {
+        display: none !important;
+      }
+      html, body {
+        background: white !important;
         margin: 0 !important;
         padding: 0 !important;
         height: auto !important;
-        overflow: hidden !important;
+        overflow: hidden !important; /* Kunci supaya mboten mucul blank page ke-2 */
       }
-      body * { visibility: hidden; }
-      #printArea, #printArea * { visibility: visible; }
-      #printArea { 
-        position: absolute; 
-        left: 0; 
-        top: 0; 
-        width: 100% !important; 
+      #printArea {
+        display: block !important;
+        position: relative !important;
+        width: 100% !important;
         box-shadow: none !important;
         border: none !important;
-        background: white !important;
-        margin: 0 !important;
-        padding: 8px !important;
+        padding: 10px !important;
+        page-break-inside: avoid !important;
       }
     }
   </style>
@@ -229,7 +230,7 @@
         <!-- HEADER KUITANSI -->
         <div class="border-b border-[#C29B46]/30 pb-3 text-center">
           <div class="flex justify-center py-1">
-            <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo LAZMU" class="h-10 w-auto object-contain" crossorigin="anonymous">
+            <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-10 w-auto object-contain" crossorigin="anonymous">
           </div>
           <p class="text-[9px] font-bold text-gray-500 uppercase tracking-tight mt-1">TANDA TERIMA ZAKAT FITRAH & INFAK</p>
         </div>
@@ -306,8 +307,8 @@
     </div>
   </div>
 
-  <!-- AREA CETAK FISIK (DOBEL: ATAS KUITANSI MUZAKKI + BAWAH ARSIP AMIL) - COMPACT PAS 1 HALAMAN -->
-  <div id="printArea" class="hidden p-3 max-w-sm mx-auto bg-white text-slate-800 text-[11px] font-sans space-y-2 border border-slate-400 rounded-lg">
+  <!-- AREA CETAK FISIK (DOBEL: ATAS KUITANSI MUZAKKI + BAWAH ARSIP AMIL) -->
+  <div id="printArea" class="hidden max-w-sm mx-auto bg-white text-slate-800 text-[11px] font-sans space-y-2 border border-slate-400 rounded-lg">
     
     <!-- BAGIAN ATAS: KUITANSI MUZAKKI (BER-QR & DOA LENGKAP) -->
     <div class="text-center space-y-1 pb-1.5 border-b border-dashed border-slate-400">
@@ -350,12 +351,12 @@
       <p class="text-[8px] text-slate-700 font-semibold pt-0.5 border-t border-slate-200">Petugas Amil: <span id="pAmil" class="font-bold"></span></p>
     </div>
 
-    <!-- GARIS PEMBATAS PUTUS-PUTUS SOBEKAN -->
+    <!-- GARIS PEMBATAS PUTUS-PUTUS SOBEKAN DIUBAH PENDEK -->
     <div class="text-center text-slate-400 font-mono text-[9px] tracking-widest my-1 select-none">
-      -------------------------------------------------- (SOBEK DI SINI) --------------------------------------------------
+      ------------------------ (SOBEK DI SINI) ------------------------
     </div>
 
-    <!-- BAGIAN BAWAH: ARsip / CATATAN PETUGAS AMIL (ESTETIK & LENGKAP NAMA PETUGAS) -->
+    <!-- BAGIAN BAWAH: ARSIP / CATATAN PETUGAS AMIL (ESTETIK & LENGKAP NAMA PETUGAS) -->
     <div class="text-[10px] space-y-0.5 text-slate-700 px-1">
       <div class="text-center font-bold tracking-wider text-slate-500 uppercase text-[9px] border-b border-dotted border-slate-300 pb-0.5 mb-0.5">
         Arsip Rekap Petugas Posko

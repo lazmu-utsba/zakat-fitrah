@@ -114,10 +114,9 @@
 
         <!-- Wrapper Infak Beras (Muncul jika bayar Beras Langsung) -->
         <div id="wrapperInfakBeras" class="hidden mb-3">
-          <label class="block text-xs font-semibold text-amber-700 mb-1">Kelebihan Infak Beras (Kg)</label>
-          <input type="number" id="offlineInfakBerasKg" placeholder="Contoh: 2" min="0" step="0.5" value="0"
+          <label class="block text-xs font-semibold text-amber-700 mb-1">Infak Beras / Sedekah (Kg)</label>
+          <input type="number" id="offlineInfakBerasKg" placeholder="Contoh: 2" min="0" step="0.5" value="0" oninput="hitungTotalOffline()"
             class="w-full px-3.5 py-2 text-xs border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none bg-amber-50/50 font-bold text-amber-900">
-          <p class="text-[10px] text-slate-400 mt-0.5">Isi jika muzakki memberikan kelebihan beras untuk sedekah.</p>
         </div>
 
         <!-- Ringkasan Singkat -->
@@ -366,13 +365,14 @@
       let totalUangZakatAll = 0;
       let totalBerasAll = 0;
       let totalInfakAll = 0;
+      let totalInfakBerasAll = 0; // Rekap khusus infak beras (Kg)
 
       const tbody = document.getElementById("tabelTransaksiBody");
       tbody.innerHTML = "";
 
       if (listData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data transaksi tercatat.</td></tr>`;
-        updateStatistikUI(0, 0, 0, 0);
+        updateStatistikUI(0, 0, 0, 0, 0);
         return;
       }
 
@@ -409,20 +409,31 @@
         const status = row[11] || "-";
 
         totalJiwaAll += jiwa;
-        totalInfakAll += infak;
 
         let infoBayarHtml = "";
         if (jenis.includes("Beras")) {
           const jumlahKg = jiwa * 2.5;
           totalBerasAll += jumlahKg;
           
-          // Deteksi apakah ada infak beras (disimpan di catatan / infak rupiah atau kita baca dari ket)
+          // Deteksi jika ada infak beras (kita simpan/baca dari kolom infak atau catatan khusus)
+          // Asumsi jika pembayaran Beras, nilai infak di database kita manfaatkan atau kita deteksi dari nominal
+          // Supaya murni Kg, kita bisa cek jika infak bernilai sebagai kg (jika disimpan di backend) atau kita sesuaikan:
+          // Di sini kita asumsikan kolom infak berisi angka kg jika jenis beras, atau kita tampilkan sesuai data.
+          // Mari kita buat supaya teks infak beras tampil murni "X Kg"
+          let infakBerasKg = 0;
+          if (infak > 0) {
+            // Jika tersimpan sebagai rupiah konversi sebelumnya, kita bisa tampilkan langsung atau asumsikan angka kecil sebagai Kg
+            // Lebih akurat: kita simpan nilai kg langsung jika diinput amil. Mari kita sesuaikan fungsi simpan di bawah.
+            infakBerasKg = infak < 100 ? infak : 0; // kalau < 100 kita anggap kg
+          }
+
           infoBayarHtml = `
             <span class="block font-bold text-teal-900 whitespace-nowrap">${jenis} (${jumlahKg} Kg)</span>
-            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak Beras/Sedekah: Rp ${infak.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
+            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak Beras/Sedekah: ${infak} Kg</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
           `;
         } else {
           totalUangZakatAll += zakatUang;
+          totalInfakAll += infak;
           infoBayarHtml = `
             <span class="block whitespace-nowrap">${jenis}</span>
             <span class="font-bold text-emerald-700 whitespace-nowrap">Rp ${zakatUang.toLocaleString('id-ID')}</span>
@@ -493,7 +504,7 @@
 
       let hargaSatuan = parseInt(globalConfig.STANDAR_HARGA_BERAS, 10) || 45000;
       if (jenis === "Uang (Custom)") {
-        hargaSatuan = parseInt(globalConfig.offlineCustomHarga?.value.replace(/\./g, ''), 10) || 0;
+        hargaSatuan = parseInt(document.getElementById("offlineCustomHarga").value.replace(/\./g, ''), 10) || 0;
         const batasBawah = parseInt(globalConfig.BATAS_BAWAH_HARGA_BERAS, 10) || 15000;
         if (hargaSatuan < batasBawah) {
           tampilkanAlert(`Harga beras custom minimal Rp ${batasBawah.toLocaleString('id-ID')}.`);
@@ -507,11 +518,7 @@
       
       let infak = 0;
       if (jenis === "Beras (Langsung)") {
-        const infakBerasKg = parseFloat(document.getElementById("offlineInfakBerasKg").value) || 0;
-        // Kita konversikan infak beras ke rupiah atau kita simpan sebagai infak konversi harga standar beras posko
-        if (infakBerasKg > 0) {
-          infak = infakBerasKg * (parseInt(globalConfig.STANDAR_HARGA_BERAS, 10) || 18000); // estimasi konversi harga per kg beras untuk infak
-        }
+        infak = parseFloat(document.getElementById("offlineInfakBerasKg").value) || 0; // Simpan angka Kg langsung
       } else {
         infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
       }

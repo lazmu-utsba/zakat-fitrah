@@ -105,9 +105,20 @@
             class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <label class="block text-xs font-semibold text-gray-700 mb-1">Infak / Sedekah (Opsional)</label>
-        <input type="text" id="offlineInfak" placeholder="0" oninput="formatRupiahMasking(this); hitungTotalOffline();"
-          class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-3 focus:ring-2 focus:ring-teal-500 outline-none">
+        <!-- Wrapper Infak Uang (Muncul jika bayar uang) -->
+        <div id="wrapperInfakUang" class="mb-2">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Infak / Sedekah Uang (Opsional)</label>
+          <input type="text" id="offlineInfak" placeholder="0" oninput="formatRupiahMasking(this); hitungTotalOffline();"
+            class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+
+        <!-- Wrapper Infak Beras (Muncul jika bayar Beras Langsung) -->
+        <div id="wrapperInfakBeras" class="hidden mb-3">
+          <label class="block text-xs font-semibold text-amber-700 mb-1">Kelebihan Infak Beras (Kg)</label>
+          <input type="number" id="offlineInfakBerasKg" placeholder="Contoh: 2" min="0" step="0.5" value="0"
+            class="w-full px-3.5 py-2 text-xs border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none bg-amber-50/50 font-bold text-amber-900">
+          <p class="text-[10px] text-slate-400 mt-0.5">Isi jika muzakki memberikan kelebihan beras untuk sedekah.</p>
+        </div>
 
         <!-- Ringkasan Singkat -->
         <div class="bg-teal-50 border border-teal-200 rounded-xl p-2.5 text-[11px] space-y-1 mb-3">
@@ -264,11 +275,22 @@
 
     function toggleJenisBayarOffline() {
       const jenis = document.getElementById("offlineJenisBayar").value;
-      const wrapper = document.getElementById("wrapperCustomOffline");
+      const wrapperCustom = document.getElementById("wrapperCustomOffline");
+      const wrapperInfakUang = document.getElementById("wrapperInfakUang");
+      const wrapperInfakBeras = document.getElementById("wrapperInfakBeras");
+
       if (jenis === "Uang (Custom)") {
-        wrapper.classList.remove("hidden");
+        wrapperCustom.classList.remove("hidden");
       } else {
-        wrapper.classList.add("hidden");
+        wrapperCustom.classList.add("hidden");
+      }
+
+      if (jenis === "Beras (Langsung)") {
+        wrapperInfakUang.classList.add("hidden");
+        wrapperInfakBeras.classList.remove("hidden");
+      } else {
+        wrapperInfakUang.classList.remove("hidden");
+        wrapperInfakBeras.classList.add("hidden");
       }
       hitungTotalOffline();
     }
@@ -290,11 +312,18 @@
       }
 
       const totalZakat = jenis === "Beras (Langsung)" ? 0 : (jiwa * hargaSatuan);
-      const infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
+      const infak = jenis === "Beras (Langsung)" ? 0 : (parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0);
       const totalBayar = totalZakat + infak;
 
-      document.getElementById("txtOfflineZakat").innerText = jenis === "Beras (Langsung)" ? `${jiwa * 2.5} Kg Beras` : `Rp ${totalZakat.toLocaleString('id-ID')}`;
-      document.getElementById("txtOfflineTotal").innerText = `Rp ${totalBayar.toLocaleString('id-ID')}`;
+      if (jenis === "Beras (Langsung)") {
+        const totalBerasWajib = jiwa * 2.5;
+        const infakBerasKg = parseFloat(document.getElementById("offlineInfakBerasKg").value) || 0;
+        document.getElementById("txtOfflineZakat").innerText = `${totalBerasWajib} Kg Beras`;
+        document.getElementById("txtOfflineTotal").innerText = infakBerasKg > 0 ? `${totalBerasWajib + infakBerasKg} Kg (Zakat ${totalBerasWajib} + Infak ${infakBerasKg} Kg)` : `${totalBerasWajib} Kg Beras`;
+      } else {
+        document.getElementById("txtOfflineZakat").innerText = `Rp ${totalZakat.toLocaleString('id-ID')}`;
+        document.getElementById("txtOfflineTotal").innerText = `Rp ${totalBayar.toLocaleString('id-ID')}`;
+      }
     }
 
     function formatRupiahMasking(input) {
@@ -387,9 +416,10 @@
           const jumlahKg = jiwa * 2.5;
           totalBerasAll += jumlahKg;
           
+          // Deteksi apakah ada infak beras (disimpan di catatan / infak rupiah atau kita baca dari ket)
           infoBayarHtml = `
             <span class="block font-bold text-teal-900 whitespace-nowrap">${jenis} (${jumlahKg} Kg)</span>
-            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak: Rp ${infak.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
+            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak Beras/Sedekah: Rp ${infak.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
           `;
         } else {
           totalUangZakatAll += zakatUang;
@@ -463,7 +493,7 @@
 
       let hargaSatuan = parseInt(globalConfig.STANDAR_HARGA_BERAS, 10) || 45000;
       if (jenis === "Uang (Custom)") {
-        hargaSatuan = parseInt(document.getElementById("offlineCustomHarga").value.replace(/\./g, ''), 10) || 0;
+        hargaSatuan = parseInt(globalConfig.offlineCustomHarga?.value.replace(/\./g, ''), 10) || 0;
         const batasBawah = parseInt(globalConfig.BATAS_BAWAH_HARGA_BERAS, 10) || 15000;
         if (hargaSatuan < batasBawah) {
           tampilkanAlert(`Harga beras custom minimal Rp ${batasBawah.toLocaleString('id-ID')}.`);
@@ -474,7 +504,18 @@
       }
 
       const totalZakat = jenis === "Beras (Langsung)" ? 0 : (jiwa * hargaSatuan);
-      const infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
+      
+      let infak = 0;
+      if (jenis === "Beras (Langsung)") {
+        const infakBerasKg = parseFloat(document.getElementById("offlineInfakBerasKg").value) || 0;
+        // Kita konversikan infak beras ke rupiah atau kita simpan sebagai infak konversi harga standar beras posko
+        if (infakBerasKg > 0) {
+          infak = infakBerasKg * (parseInt(globalConfig.STANDAR_HARGA_BERAS, 10) || 18000); // estimasi konversi harga per kg beras untuk infak
+        }
+      } else {
+        infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
+      }
+
       const totalBayar = totalZakat + infak;
 
       const btn = document.getElementById("btnSimpanOffline");
@@ -510,6 +551,7 @@
           document.getElementById("offlineAlamat").value = "";
           document.getElementById("offlineJiwa").value = "1";
           document.getElementById("offlineInfak").value = "";
+          document.getElementById("offlineInfakBerasKg").value = "0";
           hitungTotalOffline();
           loadAmilDashboardData();
         } else {

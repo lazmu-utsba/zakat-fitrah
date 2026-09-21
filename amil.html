@@ -930,26 +930,42 @@
       }
 
       let teksTotal = "";
+      let rincian = "";
       const nBeras = parseFloat(infakBerasKg) || 0;
       const nUang = parseFloat(infakUangRp) || 0;
+
       if (jenis.includes('Beras')) {
-        let gabungBeras = (jiwa * 2.5) + nBeras;
+        let zakatBeras = jiwa * 2.5;
+        let gabungBeras = zakatBeras + nBeras;
+        
+        rincian += `- Zakat Fitrah: ${zakatBeras} Kg Beras\n`;
+        if (nBeras > 0) rincian += `- Infak Beras: ${nBeras} Kg\n`;
+        if (nUang > 0) rincian += `- Infak Uang: Rp ${nUang.toLocaleString('id-ID')}\n`;
+
         teksTotal = `${gabungBeras} Kg Beras`;
         if (nUang > 0) teksTotal += ` + Rp ${nUang.toLocaleString('id-ID')}`;
       } else {
+        rincian += `- Zakat Fitrah: Rp ${(parseInt(zakatUang)||0).toLocaleString('id-ID')}\n`;
+        if (nUang > 0) rincian += `- Infak Uang: Rp ${nUang.toLocaleString('id-ID')}\n`;
+        
         teksTotal = `Rp ${total.toLocaleString('id-ID')}`;
       }
 
-      let pesan = `*KUITANSI DIGITAL ZAKAT FITRAH*\n*LAZMU Masjid Utsman bin Affan*\n\n` +
+      let pesan = `Assalamu'alaikum Warahmatullahi Wabarakatuh\n\n` +
+                  `*KUITANSI DIGITAL ZAKAT FITRAH*\n*LAZMU Masjid Utsman bin Affan*\n\n` +
                   `ID Transaksi: *${id}*\n` +
                   `Tanggal: ${tgl}\n\n` +
                   `Nama: *${nama}*\n` +
                   `Alamat: ${alamat}\n` +
                   `Jumlah Jiwa: ${jiwa} Jiwa\n` +
-                  `Jenis Pembayaran: *${jenis}*\n` +
+                  `Jenis Pembayaran: *${jenis}*\n\n` +
+                  `*Rincian Pembayaran:*\n${rincian}\n` +
                   `Total Bayar: *${teksTotal}*\n\n` +
                   `Petugas Amil: ${amil}\n\n` +
-                  `_“Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura.”_`;
+                  `_“Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura.”_\n` +
+                  `(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)\n\n` +
+                  `Wassalamu'alaikum Warahmatullahi Wabarakatuh\n` +
+                  `---\nLembaga Amil Zakat Masjid Utsman bin Affan (LAZMU)`;
 
       let urlWa = `https://wa.me/${formatNo}?text=` + encodeURIComponent(pesan);
       window.open(urlWa, '_blank');

@@ -630,6 +630,58 @@
       updateStatistikUI(totalJiwaAll, totalUangZakatAll, totalSemuaBerasKg, totalInfakUangAll);
     }
 
+    // Fungsi helper untuk render isi rincian kuitansi & cetak agar dinamis (Sembunyikan Infak Beras jika bukan zakat beras)
+    function renderRincianKuitansi(isPrint, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total) {
+      const prefix = isPrint ? "p" : "vk";
+      
+      document.getElementById(`${prefix}Jiwa`).innerText = jiwa + " Jiwa";
+      document.getElementById(`${prefix}Jenis`).innerText = jenis;
+
+      const rowZakat = document.getElementById(`row${isPrint ? 'P' : 'Vk'}Zakat`);
+      const rowInfakBeras = document.getElementById(`row${isPrint ? 'P' : 'Vk'}InfakBeras`);
+      const rowInfakUang = document.getElementById(`row${isPrint ? 'P' : 'Vk'}InfakUang`);
+
+      if (jenis.includes("Beras")) {
+        if (rowZakat) rowZakat.style.display = "none";
+        
+        // Infak Beras hanya muncul jika jumlahnya > 0
+        if (infakBerasKg > 0) {
+          if (rowInfakBeras) rowInfakBeras.style.display = "flex";
+          document.getElementById(`${prefix}InfakBeras`).innerText = infakBerasKg + " Kg";
+        } else {
+          if (rowInfakBeras) rowInfakBeras.style.display = "none";
+        }
+
+        if (infakUangRp > 0) {
+          if (rowInfakUang) rowInfakUang.style.display = "flex";
+          document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
+        } else {
+          if (rowInfakUang) rowInfakUang.style.display = "none";
+        }
+
+        let totalText = (jiwa * 2.5) + " Kg Beras";
+        if (infakBerasKg > 0) totalText += ` + ${infakBerasKg} Kg Infak Beras`;
+        if (infakUangRp > 0) totalText += ` + Rp ${infakUangRp.toLocaleString('id-ID')}`;
+        document.getElementById(`${prefix}Total`).innerText = totalText;
+
+      } else {
+        if (rowZakat) rowZakat.style.display = "flex";
+        document.getElementById(`${prefix}Zakat`).innerText = "Rp " + zakatUang.toLocaleString('id-ID');
+
+        // Sembunyikan total infak beras jika zakatnya uang
+        if (rowInfakBeras) rowInfakBeras.style.display = "none";
+
+        if (infakUangRp > 0) {
+          if (rowInfakUang) rowInfakUang.style.display = "flex";
+          document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
+        } else {
+          if (rowInfakUang) rowInfakUang.style.display = "none";
+        }
+
+        document.getElementById(`${prefix}Total`).innerText = "Rp " + total.toLocaleString('id-ID');
+      }
+    }
+
     function bukaModalKuitansiVisual(tgl, id, nama, alamat, noWa, jiwa, jenis, zakatUang, infakBerasKg, infakUangRp, total, amil) {
       if (amil === "Online / Mandiri" || amil === "-") amil = "Admin Lazmu";
       currentModalData = { tgl, id, nama, alamat, noWa, jiwa, jenis, zakatUang, infakBerasKg, infakUangRp, total, amil };
@@ -638,22 +690,9 @@
       document.getElementById("vkNama").innerText = nama;
       document.getElementById("vkAlamat").innerText = alamat;
       document.getElementById("vkTanggal").innerText = tgl;
-      document.getElementById("vkJiwa").innerText = jiwa + " Jiwa";
-      document.getElementById("vkJenis").innerText = jenis;
       document.getElementById("vkAmil").innerText = amil;
 
-      if (jenis.includes("Beras")) {
-        document.getElementById("rowVkZakat").style.display = "none";
-        document.getElementById("vkInfakBeras").innerText = infakBerasKg + " Kg";
-        document.getElementById("vkInfakUang").innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
-        document.getElementById("vkTotal").innerText = (jiwa * 2.5) + " Kg Beras" + (infakUangRp > 0 ? " + Rp " + infakUangRp.toLocaleString('id-ID') : "");
-      } else {
-        document.getElementById("rowVkZakat").style.display = "flex";
-        document.getElementById("vkZakat").innerText = "Rp " + zakatUang.toLocaleString('id-ID');
-        document.getElementById("vkInfakBeras").innerText = "-";
-        document.getElementById("vkInfakUang").innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
-        document.getElementById("vkTotal").innerText = "Rp " + total.toLocaleString('id-ID');
-      }
+      renderRincianKuitansi(false, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total);
 
       document.getElementById("modalKuitansiVisual").classList.remove("hidden");
     }
@@ -669,22 +708,9 @@
       document.getElementById("pTgl").innerText = tgl;
       document.getElementById("pNama").innerText = nama;
       document.getElementById("pAlamat").innerText = alamat;
-      document.getElementById("pJiwa").innerText = jiwa + " Jiwa";
-      document.getElementById("pJenis").innerText = jenis;
       document.getElementById("pAmil").innerText = amil;
       
-      if (jenis.includes("Beras")) {
-        document.getElementById("rowPZakat").style.display = "none";
-        document.getElementById("pInfakBeras").innerText = infakBerasKg + " Kg";
-        document.getElementById("pInfakUang").innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
-        document.getElementById("pTotal").innerText = (jiwa * 2.5) + " Kg Beras" + (infakUangRp > 0 ? " + Rp " + infakUangRp.toLocaleString('id-ID') : "");
-      } else {
-        document.getElementById("rowPZakat").style.display = "flex";
-        document.getElementById("pZakat").innerText = "Rp " + zakatUang.toLocaleString('id-ID');
-        document.getElementById("pInfakBeras").innerText = "-";
-        document.getElementById("pInfakUang").innerText = "Rp " + infakUangRp.toLocaleString('id-ID');
-        document.getElementById("pTotal").innerText = "Rp " + total.toLocaleString('id-ID');
-      }
+      renderRincianKuitansi(true, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total);
 
       const printAreaEl = document.getElementById("printArea");
       printAreaEl.classList.remove("hidden");

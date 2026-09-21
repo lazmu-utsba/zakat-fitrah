@@ -105,14 +105,14 @@
             class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <!-- Wrapper Infak Uang (Muncul jika bayar uang) -->
+        <!-- Wrapper Infak Uang (Selalu muncul, fleksibel untuk Uang atau Beras) -->
         <div id="wrapperInfakUang" class="mb-2">
           <label class="block text-xs font-semibold text-gray-700 mb-1">Infak / Sedekah Uang (Opsional)</label>
           <input type="text" id="offlineInfak" placeholder="0" oninput="formatRupiahMasking(this); hitungTotalOffline();"
             class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <!-- Wrapper Infak Beras (Muncul jika bayar Beras Langsung) -->
+        <!-- Wrapper Infak Beras (Hanya muncul jika bayar Beras) -->
         <div id="wrapperInfakBeras" class="hidden mb-3">
           <label class="block text-xs font-semibold text-amber-700 mb-1">Infak Beras / Sedekah (Kg)</label>
           <div class="flex items-center">
@@ -297,12 +297,12 @@
         wrapperCustom.classList.add("hidden");
       }
 
+      // Jika bayar Beras, tampilkan input infak beras KG. Infak uang tetap bisa muncul/opsional jika muzakki mau nambah uang.
       if (jenis === "Beras (Langsung)") {
-        wrapperInfakUang.classList.add("hidden");
         wrapperInfakBeras.classList.remove("hidden");
       } else {
-        wrapperInfakUang.classList.remove("hidden");
         wrapperInfakBeras.classList.add("hidden");
+        document.getElementById("offlineInfakBerasKg").value = "0";
       }
       hitungTotalOffline();
     }
@@ -324,14 +324,18 @@
       }
 
       const totalZakat = jenis === "Beras (Langsung)" ? 0 : (jiwa * hargaSatuan);
-      const infak = jenis === "Beras (Langsung)" ? 0 : (parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0);
-      const totalBayar = totalZakat + infak;
+      const infakUang = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
+      const totalBayar = totalZakat + infakUang;
 
       if (jenis === "Beras (Langsung)") {
         const totalBerasWajib = jiwa * 2.5;
         const infakBerasKg = parseInt(document.getElementById("offlineInfakBerasKg").value, 10) || 0;
         document.getElementById("txtOfflineZakat").innerText = `${totalBerasWajib} Kg Beras`;
-        document.getElementById("txtOfflineTotal").innerText = infakBerasKg > 0 ? `${totalBerasWajib + infakBerasKg} Kg (Zakat ${totalBerasWajib} + Infak ${infakBerasKg} Kg)` : `${totalBerasWajib} Kg Beras`;
+        
+        let txtRincian = `${totalBerasWajib} Kg Beras`;
+        if (infakBerasKg > 0) txtRincian += ` + Infak Beras ${infakBerasKg} Kg`;
+        if (infakUang > 0) txtRincian += ` + Infak Uang Rp ${infakUang.toLocaleString('id-ID')}`;
+        document.getElementById("txtOfflineTotal").innerText = txtRincian;
       } else {
         document.getElementById("txtOfflineZakat").innerText = `Rp ${totalZakat.toLocaleString('id-ID')}`;
         document.getElementById("txtOfflineTotal").innerText = `Rp ${totalBayar.toLocaleString('id-ID')}`;
@@ -428,15 +432,22 @@
           const jumlahKg = jiwa * 2.5;
           totalBerasZakatAll += jumlahKg;
           
-          let infakBerasKg = 0;
-          if (infak > 0 && infak < 100) {
-            infakBerasKg = infak;
-            totalInfakBerasAll += infakBerasKg;
+          let infakTextHtml = "";
+          if (infak > 0) {
+            if (infak < 100) {
+              totalInfakBerasAll += infak;
+              infakTextHtml = `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak Beras: ${infak} Kg</span>`;
+            } else {
+              totalInfakAll += infak;
+              infakTextHtml = `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak: Rp ${infak.toLocaleString('id-ID')}</span>`;
+            }
+          } else {
+            infakTextHtml = `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`;
           }
           
           infoBayarHtml = `
             <span class="block font-bold text-teal-900 whitespace-nowrap">${jenis} (${jumlahKg} Kg)</span>
-            ${infakBerasKg > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak Beras/Sedekah: ${infakBerasKg} Kg</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
+            ${infakTextHtml}
           `;
         } else {
           totalUangZakatAll += zakatUang;
@@ -526,7 +537,11 @@
       
       let infak = 0;
       if (jenis === "Beras (Langsung)") {
-        infak = parseInt(document.getElementById("offlineInfakBerasKg").value, 10) || 0;
+        const infakBerasKg = parseInt(document.getElementById("offlineInfakBerasKg").value, 10) || 0;
+        const infakUangTambahan = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
+        
+        // Prioritas: jika amil ngisi infak beras kg, pakai itu. Jika ngisi infak uang, pakai itu.
+        infak = infakBerasKg > 0 ? infakBerasKg : infakUangTambahan;
       } else {
         infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
       }

@@ -7,7 +7,536 @@
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ">  
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-slate-100 min-h-screen font-sans pb-10"><!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Amil - Zakat Fitrah LAZMU</title>
+  <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ">  
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 <body class="bg-slate-100 min-h-screen font-sans pb-10">
+
+  <!-- ========================================== -->
+  <!-- MODAL LOGIN AMIL                           -->
+  <!-- ========================================== -->
+  <div id="loginModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border border-slate-100">
+      <div class="flex justify-center">
+        <div class="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center p-1 border border-teal-100 shadow-inner">
+          <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo" class="w-12 h-12 object-contain rounded-full">
+        </div>
+      </div>
+      <div>
+        <h2 class="text-base font-bold text-teal-800">Login Petugas Amil</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Posko Zakat Fitrah Masjid Utsman bin Affan</p>
+      </div>
+
+      <div class="text-left space-y-1">
+        <label class="block text-xs font-semibold text-slate-700">Password Amil</label>
+        <input type="password" id="inputPasswordAmil" placeholder="Masukkan password..." 
+          class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+      </div>
+
+      <button type="button" onclick="prosesLoginAmil()" id="btnLoginAmil"
+        class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 rounded-xl text-xs shadow-md transition cursor-pointer">
+        Masuk Dashboard
+      </button>
+      <a href="index.html" class="block text-[11px] text-slate-400 hover:text-teal-700 transition">&larr; Kembali ke Halaman Utama Muzakki</a>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- DASHBOARD UTAMA AMIL                       -->
+  <!-- ========================================== -->
+  <div id="dashboardAmil" class="hidden max-w-5xl mx-auto mt-4 p-4 space-y-4">
+    
+    <!-- HEADER DASHBOARD -->
+    <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo" class="w-12 h-12 object-contain rounded-full border p-0.5">
+        <div>
+          <h1 class="text-sm font-bold text-teal-800">Panel Posko Amil Zakat Fitrah</h1>
+          <p class="text-[11px] text-slate-500 flex items-center gap-1.5">
+            <span>LAZMU Masjid Utsman bin Affan</span>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-100 text-emerald-800">
+              <span class="w-1.5 h-1.5 mr-1 bg-emerald-500 rounded-full animate-pulse"></span> Auto-Sync Active
+            </span>
+          </p>
+        </div>
+      </div>
+      <button type="button" onclick="location.reload()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold px-3 py-2 rounded-xl transition cursor-pointer">
+        Keluar / Logout
+      </button>
+    </div>
+
+    <!-- GRID UTAMA: FORM INPUT OFFLINE & STATISTIK -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- KOLOM KIRI: FORM INPUT POSKO -->
+      <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-1 space-y-3">
+        <h2 class="text-xs font-bold text-teal-800 uppercase border-b pb-2">Input Zakat Offline (Posko)</h2>
+
+        <!-- Petugas Amil -->
+        <label class="block text-xs font-semibold text-gray-700 mb-1">Petugas Amil yang Bertugas</label>
+        <select id="inputPetugasAmil" class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-2 focus:ring-2 focus:ring-teal-500 outline-none bg-white">
+          <!-- Render dinamis list amil -->
+        </select>
+
+        <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Kepala Keluarga / Muzakki</label>
+        <input type="text" id="offlineNama" placeholder="Contoh: Bp. Abdullah" 
+          class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-2 focus:ring-2 focus:ring-teal-500 outline-none uppercase">
+
+        <label class="block text-xs font-semibold text-gray-700 mb-1">Alamat / RT-RW</label>
+        <input type="text" id="offlineAlamat" placeholder="Contoh: GCV Blok K2" 
+          class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-2 focus:ring-2 focus:ring-teal-500 outline-none uppercase">
+
+        <label class="block text-xs font-semibold text-gray-700 mb-1">Jumlah Jiwa</label>
+        <div class="flex items-center mb-2">
+          <button type="button" onclick="ubahJiwaOffline(-1)" class="bg-slate-200 px-3 py-2 rounded-l-xl text-xs font-bold">&minus;</button>
+          <input type="number" id="offlineJiwa" value="1" min="1" oninput="hitungTotalOffline()" 
+            class="w-full py-2 text-xs border-t border-b border-gray-300 text-center outline-none font-bold text-teal-800 bg-white">
+          <button type="button" onclick="ubahJiwaOffline(1)" class="bg-teal-700 text-white px-3 py-2 rounded-r-xl text-xs font-bold">&plus;</button>
+        </div>
+
+        <label class="block text-xs font-semibold text-gray-700 mb-1">Jenis Pembayaran Zakat</label>
+        <select id="offlineJenisBayar" onchange="toggleJenisBayarOffline()" class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-2 focus:ring-2 focus:ring-teal-500 outline-none bg-white">
+          <option value="Uang (Reguler)">Uang - Standar Reguler (Rp 45.000 / jiwa)</option>
+          <option value="Uang (Custom)">Uang - Sesuai Harga Beras Custom</option>
+          <option value="Beras (Langsung)">Beras (2,5 Kg / jiwa)</option>
+        </select>
+
+        <!-- Wrapper Harga Custom -->
+        <div id="wrapperCustomOffline" class="hidden mb-2">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Harga Beras per Jiwa (Rp)</label>
+          <input type="text" id="offlineCustomHarga" placeholder="Contoh: 40000" oninput="formatRupiahMasking(this); hitungTotalOffline();"
+            class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+
+        <label class="block text-xs font-semibold text-gray-700 mb-1">Infak / Sedekah (Opsional)</label>
+        <input type="text" id="offlineInfak" placeholder="0" oninput="formatRupiahMasking(this); hitungTotalOffline();"
+          class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl mb-3 focus:ring-2 focus:ring-teal-500 outline-none">
+
+        <!-- Ringkasan Singkat -->
+        <div class="bg-teal-50 border border-teal-200 rounded-xl p-2.5 text-[11px] space-y-1 mb-3">
+          <div class="flex justify-between"><span>Total Zakat:</span><span id="txtOfflineZakat" class="font-bold">Rp 45.000</span></div>
+          <div class="flex justify-between"><span>Total Bayar:</span><span id="txtOfflineTotal" class="font-bold text-teal-700">Rp 45.000</span></div>
+        </div>
+
+        <button type="button" onclick="simpanTransaksiOffline()" id="btnSimpanOffline"
+          class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer">
+          Simpan Transaksi Posko
+        </button>
+      </div>
+
+      <!-- KOLOM KANAN: STATISTIK & TABEL TRANSAKSI -->
+      <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-2 space-y-4">
+        <h2 class="text-xs font-bold text-teal-800 uppercase border-b pb-2">Rekapitulasi & Riwayat Transaksi</h2>
+
+        <!-- Kotak Ringkasan Statistik (4 Kolom) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+          <div class="bg-slate-50 border rounded-xl p-2.5">
+            <p class="text-[10px] text-slate-400 font-semibold uppercase">Total Jiwa</p>
+            <p id="statTotalJiwa" class="text-base font-bold text-teal-800">0</p>
+          </div>
+          <div class="bg-slate-50 border rounded-xl p-2.5">
+            <p class="text-[10px] text-slate-400 font-semibold uppercase">Uang Zakat</p>
+            <p id="statTotalUang" class="text-xs font-bold text-teal-800 mt-1">Rp 0</p>
+          </div>
+          <div class="bg-slate-50 border rounded-xl p-2.5">
+            <p class="text-[10px] text-slate-400 font-semibold uppercase">Total Beras</p>
+            <p id="statTotalBeras" class="text-xs font-bold text-teal-800 mt-1">0 Kg</p>
+          </div>
+          <div class="bg-slate-50 border rounded-xl p-2.5">
+            <p class="text-[10px] text-slate-400 font-semibold uppercase">Total Infak</p>
+            <p id="statTotalInfak" class="text-xs font-bold text-teal-800 mt-1">Rp 0</p>
+          </div>
+        </div>
+
+        <!-- Fitur Pencarian Data -->
+        <div class="flex gap-2">
+          <input type="text" id="searchKeyword" placeholder="Cari nama muzakki / ID transaksi..." oninput="filterTabelTransaksi()"
+            class="w-full px-3 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+        </div>
+
+        <!-- Tabel Data (Responsive Scroll) -->
+        <div class="overflow-x-auto border border-slate-200 rounded-xl max-h-96">
+          <table class="w-full text-left border-collapse text-[11px]">
+            <thead class="bg-teal-800 text-white sticky top-0">
+              <tr>
+                <th class="p-2.5">Waktu / ID</th>
+                <th class="p-2.5">Muzakki & Alamat</th>
+                <th class="p-2.5 text-center">Jiwa</th>
+                <th class="p-2.5">Jenis / Bayar</th>
+                <th class="p-2.5">Amil</th>
+                <th class="p-2.5">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tabelTransaksiBody" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="6" class="p-4 text-center text-slate-400">Memuat data dari Google Sheets...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- POP-UP ALERT -->
+  <div id="customAlertModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="tutupAlert()"></div>
+    <div class="bg-white rounded-2xl shadow-xl z-10 w-full max-w-xs p-6 text-center border border-slate-100">
+      <h3 class="text-base font-bold text-slate-800 mb-2">Pemberitahuan</h3>
+      <p id="customAlertPesan" class="text-xs text-slate-600 mb-4"></p>
+      <button type="button" onclick="tutupAlert()" class="w-full bg-teal-700 text-white font-bold py-2.5 rounded-xl text-xs cursor-pointer">Mengerti</button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyHt0yFqUiJ4P4zMWNbzhJfJzNumxQ2r9MTwaWMhdq7N_JHt7LqmhGju_nqXFhzmTAw/exec";
+    let globalConfig = {};
+    let semuaTransaksiCache = [];
+
+    async function prosesLoginAmil() {
+      const pass = document.getElementById("inputPasswordAmil").value.trim();
+      if (!pass) {
+        tampilkanAlert("Mohon masukkan password amil terlebih dahulu.");
+        return;
+      }
+
+      const btn = document.getElementById("btnLoginAmil");
+      btn.disabled = true;
+      btn.innerText = "Memeriksa...";
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "cekLoginAmil",
+            secretCode: "z9X!mQ7#pL2$vW8@kX4%nR3&bT6*yH5",
+            password: pass
+          })
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          document.getElementById("loginModal").classList.add("hidden");
+          document.getElementById("dashboardAmil").classList.remove("hidden");
+          
+          const selectAmil = document.getElementById("inputPetugasAmil");
+          selectAmil.innerHTML = "";
+          data.daftarAmil.forEach(nama => {
+            const opt = document.createElement("option");
+            opt.value = nama;
+            opt.innerText = nama;
+            selectAmil.appendChild(opt);
+          });
+
+          // Load data awal
+          loadAmilDashboardData();
+
+          // AKTIFKAN AUTO-REFRESH (Sinkronisasi Otomatis setiap 5 Detik)
+          setInterval(() => {
+            loadAmilDashboardData(true); // true = silent background refresh (tanpa ganggu ketikan form)
+          }, 5000);
+
+        } else {
+          tampilkanAlert(data.message || "Password salah!");
+        }
+      } catch (err) {
+        tampilkanAlert("Gagal terhubung ke server: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Masuk Dashboard";
+      }
+    }
+
+    function tampilkanAlert(pesan) {
+      document.getElementById('customAlertPesan').innerText = pesan;
+      document.getElementById('customAlertModal').classList.remove('hidden');
+    }
+    function tutupAlert() {
+      document.getElementById('customAlertModal').classList.add('hidden');
+    }
+
+    function ubahJiwaOffline(val) {
+      const el = document.getElementById("offlineJiwa");
+      let curr = parseInt(el.value, 10) || 1;
+      curr += val;
+      if (curr < 1) curr = 1;
+      el.value = curr;
+      hitungTotalOffline();
+    }
+
+    function toggleJenisBayarOffline() {
+      const jenis = document.getElementById("offlineJenisBayar").value;
+      const wrapper = document.getElementById("wrapperCustomOffline");
+      if (jenis === "Uang (Custom)") {
+        wrapper.classList.remove("hidden");
+      } else {
+        wrapper.classList.add("hidden");
+      }
+      hitungTotalOffline();
+    }
+
+    function hitungTotalOffline() {
+      const jiwa = parseInt(document.getElementById("offlineJiwa").value, 10) || 1;
+      const jenis = document.getElementById("offlineJenisBayar").value;
+      let hargaSatuan = 45000;
+
+      if (globalConfig.STANDAR_HARGA_BERAS) {
+        hargaSatuan = parseInt(globalConfig.STANDAR_HARGA_BERAS, 10);
+      }
+
+      if (jenis === "Uang (Custom)") {
+        const custom = parseInt(document.getElementById("offlineCustomHarga").value.replace(/\./g, ''), 10);
+        if (custom && custom > 0) hargaSatuan = custom;
+      } else if (jenis === "Beras (Langsung)") {
+        hargaSatuan = 0;
+      }
+
+      const totalZakat = jenis === "Beras (Langsung)" ? 0 : (jiwa * hargaSatuan);
+      const infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
+      const totalBayar = totalZakat + infak;
+
+      document.getElementById("txtOfflineZakat").innerText = jenis === "Beras (Langsung)" ? `${jiwa * 2.5} Kg Beras` : `Rp ${totalZakat.toLocaleString('id-ID')}`;
+      document.getElementById("txtOfflineTotal").innerText = `Rp ${totalBayar.toLocaleString('id-ID')}`;
+    }
+
+    function formatRupiahMasking(input) {
+      let angka = input.value.replace(/[^,\d]/g, '').toString();
+      let split = angka.split(',');
+      let sisa = split[0].length % 3;
+      let rupiah = split[0].substr(0, sisa);
+      let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+      if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+      }
+      input.value = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+    }
+
+    async function loadAmilDashboardData(isSilent = false) {
+      try {
+        // Tarik Config (cukup sekali atau pas awal, tapi aman ditarik berkala)
+        if (!isSilent || Object.keys(globalConfig).length === 0) {
+          const resConfig = await fetch(`${API_URL}?action=getConfig`);
+          const dataConfig = await resConfig.json();
+          if (dataConfig.status === "success") {
+            globalConfig = dataConfig.config;
+            hitungTotalOffline();
+          }
+        }
+
+        // Tarik Data Transaksi Terbaru
+        const resTrans = await fetch(`${API_URL}?action=getTransaksi`);
+        const dataTrans = await resTrans.json();
+        if (dataTrans.status === "success") {
+          semuaTransaksiCache = dataTrans.data || [];
+          renderTabelDanStatistik(semuaTransaksiCache);
+        }
+      } catch (e) {
+        console.error("Gagal auto-sync data dashboard", e);
+      }
+    }
+
+    function renderTabelDanStatistik(listData) {
+      let totalJiwaAll = 0;
+      let totalUangAll = 0;
+      let totalBerasAll = 0;
+      let totalInfakAll = 0;
+
+      const tbody = document.getElementById("tabelTransaksiBody");
+      tbody.innerHTML = "";
+
+      if (listData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data transaksi tercatat.</td></tr>`;
+        updateStatistikUI(0, 0, 0, 0);
+        return;
+      }
+
+      for (let i = listData.length - 1; i >= 0; i--) {
+        const row = listData[i];
+        
+        let rawDate = row[0] || "";
+        let formattedDate = rawDate;
+        if (rawDate) {
+          try {
+            const d = new Date(rawDate);
+            if (!isNaN(d.getTime())) {
+              const day = String(d.getDate()).padStart(2, '0');
+              const month = String(d.getMonth() + 1).padStart(2, '0');
+              const year = d.getFullYear();
+              const hours = String(d.getHours()).padStart(2, '0');
+              const minutes = String(d.getMinutes()).padStart(2, '0');
+              const seconds = String(d.getSeconds()).padStart(2, '0');
+              formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+            }
+          } catch (err) {
+            formattedDate = rawDate;
+          }
+        }
+
+        const idTx = row[1] || "-";
+        const nama = row[2] || "-";
+        const alamat = row[3] || "-";
+        const jiwa = parseInt(row[4], 10) || 0;
+        const jenis = row[5] || "-";
+        const totalBayar = parseInt(row[9], 10) || 0;
+        const infak = parseInt(row[8], 10) || 0;
+        const amil = row[10] || "-";
+        const status = row[11] || "-";
+
+        totalJiwaAll += jiwa;
+        totalInfakAll += infak;
+
+        let infoBayarHtml = "";
+        if (jenis.includes("Beras")) {
+          const jumlahKg = jiwa * 2.5;
+          totalBerasAll += jumlahKg;
+          totalUangAll += infak; 
+          
+          infoBayarHtml = `
+            <span class="block font-bold text-teal-900 whitespace-nowrap">${jenis} (${jumlahKg} Kg)</span>
+            ${infak > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak: Rp ${infak.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
+          `;
+        } else {
+          totalUangAll += totalBayar;
+          infoBayarHtml = `
+            <span class="block whitespace-nowrap">${jenis}</span>
+            <span class="font-bold text-teal-700 whitespace-nowrap">Rp ${totalBayar.toLocaleString('id-ID')}</span>
+          `;
+        }
+
+        let badgeClass = "bg-teal-50 text-teal-700 border-teal-200";
+        if (status.includes("Menunggu")) {
+          badgeClass = "bg-amber-50 text-amber-700 border-amber-200";
+        }
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50 transition align-top";
+        tr.innerHTML = `
+          <td class="p-2.5 border-b border-slate-100">
+            <span class="font-bold text-teal-800 block whitespace-nowrap">${idTx}</span>
+            <span class="text-[10px] text-slate-400 block whitespace-nowrap">${formattedDate}</span>
+          </td>
+          <td class="p-2.5 border-b border-slate-100">
+            <span class="font-bold text-slate-700 block uppercase">${nama}</span>
+            <span class="text-[10px] text-slate-500 uppercase">${alamat}</span>
+          </td>
+          <td class="p-2.5 border-b border-slate-100 font-bold text-center">${jiwa} Jiwa</td>
+          <td class="p-2.5 border-b border-slate-100">
+            ${infoBayarHtml}
+          </td>
+          <td class="p-2.5 border-b border-slate-100 text-slate-600 font-medium whitespace-nowrap">${amil}</td>
+          <td class="p-2.5 border-b border-slate-100">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold inline-block border whitespace-nowrap ${badgeClass}">${status}</span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      updateStatistikUI(totalJiwaAll, totalUangAll, totalBerasAll, totalInfakAll);
+    }
+
+    function updateStatistikUI(jiwa, uang, beras, infak) {
+      document.getElementById("statTotalJiwa").innerText = jiwa;
+      document.getElementById("statTotalUang").innerText = `Rp ${uang.toLocaleString('id-ID')}`;
+      document.getElementById("statTotalBeras").innerText = `${beras} Kg`;
+      document.getElementById("statTotalInfak").innerText = `Rp ${infak.toLocaleString('id-ID')}`;
+    }
+
+    function filterTabelTransaksi() {
+      const keyword = document.getElementById("searchKeyword").value.toLowerCase();
+      const filtered = semuaTransaksiCache.filter(row => {
+        const nama = String(row[2] || "").toLowerCase();
+        const idTx = String(row[1] || "").toLowerCase();
+        const alamat = String(row[3] || "").toLowerCase();
+        return nama.includes(keyword) || idTx.includes(keyword) || alamat.includes(keyword);
+      });
+      renderTabelDanStatistik(filtered);
+    }
+
+    async function simpanTransaksiOffline() {
+      const nama = document.getElementById("offlineNama").value.trim().toUpperCase();
+      const alamat = document.getElementById("offlineAlamat").value.trim().toUpperCase();
+      const jiwa = parseInt(document.getElementById("offlineJiwa").value, 10) || 1;
+      const petugas = document.getElementById("inputPetugasAmil").value;
+      const jenis = document.getElementById("offlineJenisBayar").value;
+
+      if (!nama || !alamat) {
+        tampilkanAlert("Nama Muzakki dan Alamat wajib diisi.");
+        return;
+      }
+
+      let hargaSatuan = parseInt(globalConfig.STANDAR_HARGA_BERAS, 10) || 45000;
+      if (jenis === "Uang (Custom)") {
+        hargaSatuan = parseInt(document.getElementById("offlineCustomHarga").value.replace(/\./g, ''), 10) || 0;
+        const batasBawah = parseInt(globalConfig.BATAS_BAWAH_HARGA_BERAS, 10) || 15000;
+        if (hargaSatuan < batasBawah) {
+          tampilkanAlert(`Harga beras custom minimal Rp ${batasBawah.toLocaleString('id-ID')}.`);
+          return;
+        }
+      } else if (jenis === "Beras (Langsung)") {
+        hargaSatuan = 0;
+      }
+
+      const totalZakat = jenis === "Beras (Langsung)" ? 0 : (jiwa * hargaSatuan);
+      const infak = parseInt(document.getElementById("offlineInfak").value.replace(/\./g, ''), 10) || 0;
+      const totalBayar = totalZakat + infak;
+
+      const btn = document.getElementById("btnSimpanOffline");
+      btn.disabled = true;
+      btn.innerText = "Menyimpan...";
+
+      try {
+        const payload = {
+          action: "simpanTransaksi",
+          secretCode: "z9X!mQ7#pL2$vW8@kX4%nR3&bT6*yH5",
+          namaMuzakki: nama,
+          alamat: alamat,
+          jumlahJiwa: jiwa,
+          jenisBayar: jenis,
+          hargaSatuan: hargaSatuan,
+          totalZakat: totalZakat,
+          infakOpsional: infak,
+          totalBayar: totalBayar,
+          petugasAmil: petugas,
+          statusKonfirmasi: "Lunas / Posko"
+        };
+
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.status === "success") {
+          tampilkanAlert("Transaksi posko offline berhasil disimpan!");
+          document.getElementById("offlineNama").value = "";
+          document.getElementById("offlineAlamat").value = "";
+          document.getElementById("offlineJiwa").value = "1";
+          document.getElementById("offlineInfak").value = "";
+          hitungTotalOffline();
+          loadAmilDashboardData();
+        } else {
+          tampilkanAlert("Gagal: " + result.message);
+        }
+      } catch (err) {
+        tampilkanAlert("Terjadi kesalahan sistem: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Simpan Transaksi Posko";
+      }
+    }
+  </script>
+</body>
+</html>
 
   <!-- ========================================== -->
   <!-- MODAL LOGIN AMIL                           -->

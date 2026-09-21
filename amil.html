@@ -267,6 +267,10 @@
           <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span class="font-bold" id="vkJiwa">0 Jiwa</span></div>
           <div class="flex justify-between"><span>Jenis Zakat:</span> <span class="font-bold text-[#0B7A6E]" id="vkJenis">Uang</span></div>
           <div class="flex justify-between" id="rowVkZakat"><span>Total Zakat:</span> <span class="font-bold" id="vkZakat">Rp 0</span></div>
+          
+          <!-- PENAMBAHAN ROW INFAK BERAS -->
+          <div class="flex justify-between" id="rowVkInfakBeras" style="display: none;"><span>Infak Beras:</span> <span class="font-bold text-amber-700" id="vkInfakBeras">0 Kg</span></div>
+          
           <div class="flex justify-between" id="rowVkInfakUang"><span>Infak Uang:</span> <span class="font-bold text-amber-700" id="vkInfakUang">Rp 0</span></div>
           <div class="flex justify-between border-t border-[#C29B46]/20 pt-1.5 font-bold text-[#0B7A6E] text-xs">
             <span>TOTAL BAYAR:</span> <span id="vkTotal">Rp 0</span>
@@ -338,6 +342,10 @@
       <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span class="font-bold" id="pJiwa">0 Jiwa</span></div>
       <div class="flex justify-between"><span>Jenis Zakat:</span> <span class="font-bold text-teal-800" id="pJenis">Uang</span></div>
       <div class="flex justify-between" id="rowPZakat"><span>Total Zakat:</span> <span class="font-bold" id="pZakat">Rp 0</span></div>
+      
+      <!-- PENAMBAHAN ROW INFAK BERAS -->
+      <div class="flex justify-between" id="rowPInfakBeras" style="display: none;"><span>Infak Beras:</span> <span class="font-bold text-amber-700" id="pInfakBeras">0 Kg</span></div>
+      
       <div class="flex justify-between" id="rowPInfakUang"><span>Infak Uang:</span> <span class="font-bold text-amber-700" id="pInfakUang">Rp 0</span></div>
       <div class="flex justify-between border-t border-slate-200 pt-0.5 font-bold text-teal-800">
         <span>TOTAL BAYAR:</span> <span id="pTotal">Rp 0</span>
@@ -351,12 +359,12 @@
       <p class="text-[8px] text-slate-700 font-semibold pt-0.5 border-t border-slate-200">Petugas Amil: <span id="pAmil" class="font-bold"></span></p>
     </div>
 
-    <!-- GARIS PEMBATAS PUTUS-PUTUS SOBEKAN DIUBAH PENDEK -->
+    <!-- GARIS PEMBATAS PUTUS-PUTUS SOBEKAN -->
     <div class="text-center text-slate-400 font-mono text-[9px] tracking-widest my-1 select-none">
       ---------------------- (SOBEK DI SINI) ----------------------
     </div>
 
-    <!-- BAGIAN BAWAH: ARSIP / CATATAN PETUGAS AMIL (ESTETIK & LENGKAP NAMA PETUGAS) -->
+    <!-- BAGIAN BAWAH: ARSIP / CATATAN PETUGAS AMIL -->
     <div class="text-[10px] space-y-0.5 text-slate-700 px-1">
       <div class="text-center font-bold tracking-wider text-slate-500 uppercase text-[9px] border-b border-dotted border-slate-300 pb-0.5 mb-0.5">
         Arsip Rekap Petugas Posko
@@ -370,6 +378,10 @@
         <div class="flex justify-between"><span>Jumlah Jiwa:</span> <span id="pBackupJiwa">-</span></div>
         <div class="flex justify-between"><span>Jenis Zakat:</span> <span id="pBackupJenis">-</span></div>
         <div class="flex justify-between" id="rowPBackupZakat"><span>Total Zakat:</span> <span id="pBackupZakat">-</span></div>
+        
+        <!-- PENAMBAHAN ROW INFAK BERAS -->
+        <div class="flex justify-between" id="rowPBackupInfakBeras" style="display: none;"><span>Infak Beras:</span> <span id="pBackupInfakBeras">0 Kg</span></div>
+
         <div class="flex justify-between" id="rowPBackupInfakUang"><span>Infak Uang:</span> <span id="pBackupInfakUang">-</span></div>
         <div class="flex justify-between font-bold border-t border-slate-200 pt-0.5 text-teal-900">
           <span>TOTAL BAYAR:</span> <span id="pBackupTotal">-</span>
@@ -696,6 +708,7 @@
 
       const rowZakat = document.getElementById(`row${isPrint ? 'P' : 'Vk'}Zakat`);
       const rowInfakUang = document.getElementById(`row${isPrint ? 'P' : 'Vk'}InfakUang`);
+      const rowInfakBeras = document.getElementById(`row${isPrint ? 'P' : 'Vk'}InfakBeras`);
 
       const nBeras = parseFloat(infakBerasKg) || 0;
       const nUang = parseFloat(infakUangRp) || 0;
@@ -703,9 +716,22 @@
       if (jenis.includes("Beras")) {
         if (rowZakat) rowZakat.style.display = "none";
         
+        // Cek dan tampilkan Infak Beras
+        if (nBeras > 0) {
+          if (rowInfakBeras) {
+            rowInfakBeras.style.display = "flex";
+            document.getElementById(`${prefix}InfakBeras`).innerText = nBeras + " Kg";
+          }
+        } else {
+          if (rowInfakBeras) rowInfakBeras.style.display = "none";
+        }
+
+        // Cek dan tampilkan Infak Uang
         if (nUang > 0) {
-          if (rowInfakUang) rowInfakUang.style.display = "flex";
-          document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + nUang.toLocaleString('id-ID');
+          if (rowInfakUang) {
+            rowInfakUang.style.display = "flex";
+            document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + nUang.toLocaleString('id-ID');
+          }
         } else {
           if (rowInfakUang) rowInfakUang.style.display = "none";
         }
@@ -720,11 +746,15 @@
 
       } else {
         if (rowZakat) rowZakat.style.display = "flex";
+        if (rowInfakBeras) rowInfakBeras.style.display = "none"; // Infak Beras tidak muncul kalau bayar uang
+        
         document.getElementById(`${prefix}Zakat`).innerText = "Rp " + (parseInt(zakatUang) || 0).toLocaleString('id-ID');
 
         if (nUang > 0) {
-          if (rowInfakUang) rowInfakUang.style.display = "flex";
-          document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + nUang.toLocaleString('id-ID');
+          if (rowInfakUang) {
+            rowInfakUang.style.display = "flex";
+            document.getElementById(`${prefix}InfakUang`).innerText = "Rp " + nUang.toLocaleString('id-ID');
+          }
         } else {
           if (rowInfakUang) rowInfakUang.style.display = "none";
         }
@@ -781,22 +811,41 @@
 
       const rowPBackupZakat = document.getElementById("rowPBackupZakat");
       const rowPBackupInfakUang = document.getElementById("rowPBackupInfakUang");
+      const rowPBackupInfakBeras = document.getElementById("rowPBackupInfakBeras");
+      
+      const nBeras = parseFloat(infakBerasKg) || 0;
       const nUang = parseFloat(infakUangRp) || 0;
 
       if (jenis.includes("Beras")) {
         if (rowPBackupZakat) rowPBackupZakat.style.display = "none";
+        
+        if (nBeras > 0) {
+          if (rowPBackupInfakBeras) {
+            rowPBackupInfakBeras.style.display = "flex";
+            document.getElementById("pBackupInfakBeras").innerText = nBeras + " Kg";
+          }
+        } else {
+          if (rowPBackupInfakBeras) rowPBackupInfakBeras.style.display = "none";
+        }
+
         if (nUang > 0) {
-          if (rowPBackupInfakUang) rowPBackupInfakUang.style.display = "flex";
-          document.getElementById("pBackupInfakUang").innerText = "Rp " + nUang.toLocaleString('id-ID');
+          if (rowPBackupInfakUang) {
+            rowPBackupInfakUang.style.display = "flex";
+            document.getElementById("pBackupInfakUang").innerText = "Rp " + nUang.toLocaleString('id-ID');
+          }
         } else {
           if (rowPBackupInfakUang) rowPBackupInfakUang.style.display = "none";
         }
       } else {
         if (rowPBackupZakat) rowPBackupZakat.style.display = "flex";
+        if (rowPBackupInfakBeras) rowPBackupInfakBeras.style.display = "none";
+        
         document.getElementById("pBackupZakat").innerText = "Rp " + (parseInt(zakatUang) || 0).toLocaleString('id-ID');
         if (nUang > 0) {
-          if (rowPBackupInfakUang) rowPBackupInfakUang.style.display = "flex";
-          document.getElementById("pBackupInfakUang").innerText = "Rp " + nUang.toLocaleString('id-ID');
+          if (rowPBackupInfakUang) {
+            rowPBackupInfakUang.style.display = "flex";
+            document.getElementById("pBackupInfakUang").innerText = "Rp " + nUang.toLocaleString('id-ID');
+          }
         } else {
           if (rowPBackupInfakUang) rowPBackupInfakUang.style.display = "none";
         }

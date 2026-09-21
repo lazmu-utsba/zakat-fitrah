@@ -382,7 +382,11 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyHt0yFqUiJ4P4zMWNbzhJfJzNumxQ2r9MTwaWMhdq7N_JHt7LqmhGju_nqXFhzmTAw/exec";
+    // Deklarasi API_URL yang aman dari error redeclaration
+    if (typeof API_URL === 'undefined') {
+      var API_URL = "https://script.google.com/macros/s/AKfycbyHt0yFqUiJ4P4zMWNbzhJfJzNumxQ2r9MTwaWMhdq7N_JHt7LqmhGju_nqXFhzmTAw/exec";
+    }
+
     let globalConfig = {};
     let semuaTransaksiCache = [];
     let currentModalData = {};

@@ -16,7 +16,9 @@
 </head>
 <body class="bg-slate-100 min-h-screen font-sans pb-10">
 
-  <!-- MODAL LOGIN AMIL -->
+  <!-- ========================================== -->
+  <!-- MODAL LOGIN AMIL                           -->
+  <!-- ========================================== -->
   <div id="loginModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border border-slate-100">
       <div class="flex justify-center">
@@ -43,9 +45,12 @@
     </div>
   </div>
 
-  <!-- DASHBOARD UTAMA AMIL -->
+  <!-- ========================================== -->
+  <!-- DASHBOARD UTAMA AMIL                       -->
+  <!-- ========================================== -->
   <div id="dashboardAmil" class="hidden max-w-6xl mx-auto mt-4 p-4 space-y-4">
     
+    <!-- HEADER DASHBOARD -->
     <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div class="flex items-center gap-3">
         <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo" class="w-12 h-12 object-contain rounded-full border p-0.5">
@@ -64,9 +69,10 @@
       </button>
     </div>
 
+    <!-- GRID UTAMA -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       
-      <!-- FORM INPUT / EDIT POSKO -->
+      <!-- KOLOM KIRI: FORM INPUT / EDIT POSKO -->
       <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-1 space-y-3">
         <div class="flex justify-between items-center border-b pb-2">
           <h2 id="formTitle" class="text-xs font-bold text-teal-800 uppercase">Input Zakat Offline (Posko)</h2>
@@ -112,14 +118,14 @@
             class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <!-- INFAK UANG (SELALU MUNCUL) -->
+        <!-- INFAK UANG -->
         <div id="wrapperInfakUang" class="mb-2">
           <label class="block text-xs font-semibold text-gray-700 mb-1">Infak / Sedekah Uang (Rp)</label>
           <input type="text" id="offlineInfakUang" placeholder="0" oninput="formatRupiahMasking(this); hitungTotalOffline();"
             class="w-full px-3.5 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
         </div>
 
-        <!-- INFAK BERAS (MUNCUL JIKA ZAKAT BERAS) -->
+        <!-- INFAK BERAS -->
         <div id="wrapperInfakBeras" class="hidden mb-3">
           <label class="block text-xs font-semibold text-amber-700 mb-1">Infak Beras / Sedekah (Kg)</label>
           <div class="flex items-center">
@@ -141,7 +147,7 @@
         </button>
       </div>
 
-      <!-- STATISTIK & TABEL TRANSAKSI -->
+      <!-- KOLOM KANAN: STATISTIK & TABEL TRANSAKSI -->
       <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-2 space-y-4">
         <h2 class="text-xs font-bold text-teal-800 uppercase border-b pb-2">Rekapitulasi & Riwayat Transaksi</h2>
 
@@ -459,12 +465,12 @@
           totalBerasZakatAll += jumlahKg;
           
           let infakHtml = [];
-          if (infakBerasKg > 0) infakHtml.push(`Infak Beras: ${infakBerasKg} Kg`);
-          if (infakUangRp > 0) infakHtml.push(`Infak Uang: Rp ${infakUangRp.toLocaleString('id-ID')}`);
+          if (infakBerasKg > 0) infakHtml.push(`<span class="text-[10px] text-amber-600 block">Infak Beras: ${infakBerasKg} Kg</span>`);
+          if (infakUangRp > 0) infakHtml.push(`<span class="text-[10px] text-amber-600 block">Infak Uang: Rp ${infakUangRp.toLocaleString('id-ID')}</span>`);
           
           let infakTextHtml = infakHtml.length > 0 
-            ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">${infakHtml.join(' | ')}</span>`
-            : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`;
+            ? infakHtml.join('')
+            : `<span class="text-[10px] text-slate-400 block">Tanpa Infak</span>`;
           
           infoBayarHtml = `
             <span class="block font-bold text-teal-900 whitespace-nowrap">${jenis} (${jumlahKg} Kg)</span>
@@ -474,8 +480,8 @@
           totalUangZakatAll += zakatUang;
           infoBayarHtml = `
             <span class="block whitespace-nowrap">${jenis}</span>
-            <span class="font-bold text-emerald-700 whitespace-nowrap">Rp ${zakatUang.toLocaleString('id-ID')}</span>
-            ${infakUangRp > 0 ? `<span class="text-[10px] text-amber-600 block whitespace-nowrap">Infak Uang: Rp ${infakUangRp.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block whitespace-nowrap">Tanpa Infak</span>`}
+            <span class="font-bold text-emerald-700 block">Rp ${zakatUang.toLocaleString('id-ID')}</span>
+            ${infakUangRp > 0 ? `<span class="text-[10px] text-amber-600 block">Infak Uang: Rp ${infakUangRp.toLocaleString('id-ID')}</span>` : `<span class="text-[10px] text-slate-400 block">Tanpa Infak</span>`}
           `;
         }
 
@@ -729,7 +735,7 @@
       const alamat = document.getElementById("offlineAlamat").value.trim().toUpperCase();
       const noWa = document.getElementById("offlineNoWa").value.trim();
       const jiwa = parseInt(document.getElementById("offlineJiwa").value, 10) || 1;
-      const petugas = document.getElementById("inputPetugasAmil".value);
+      const petugas = document.getElementById("inputPetugasAmil").value;
       const jenis = document.getElementById("offlineJenisBayar").value;
 
       if (!nama || !alamat) {
@@ -768,7 +774,7 @@
           infakBerasKg: infakBerasKg,
           infakUangRp: infakUangRp,
           totalBayar: totalBayar,
-          petugasAmil: document.getElementById("inputPetugasAmil").value,
+          petugasAmil: petugas,
           statusKonfirmasi: "Lunas / Posko"
         };
 

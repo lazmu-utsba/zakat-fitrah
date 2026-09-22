@@ -14,17 +14,17 @@
   <div id="welcome-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 relative overflow-hidden border border-slate-100 transform transition-all">
       
-      <!-- Logo Circle -->
+      <!-- Logo Lazmu -->
       <div class="flex justify-center">
-        <div class="w-20 h-20 rounded-full border-2 border-teal-100 bg-teal-50/50 flex items-center justify-center p-1 shadow-inner">
-          <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo LAZMU" class="w-16 h-16 object-contain rounded-full">
+        <div class="flex items-center justify-center p-1">
+          <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-12 object-contain">
         </div>
       </div>
 
       <!-- Title & Slogan -->
       <div>
         <h2 id="modal-title" class="text-base font-bold text-teal-800 tracking-wide">Zakat Fitrah Digital</h2>
-        <p id="modal-slogan" class="text-xs text-slate-500 font-medium mt-0.5">LAZMU Masjid Utsman bin Affan</p>
+        <p id="modal-slogan" class="text-xs text-slate-500 font-medium mt-0.5">Lembaga Amil Zakat Masjid Utsman bin Affan (LAZMU)</p>
       </div>
 
       <!-- Welcome Text -->
@@ -63,7 +63,7 @@
     <!-- HEADER -->
     <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 text-center mb-4">
       <div class="flex justify-center mb-3">
-        <img src="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ" alt="Logo LAZMU" class="w-16 h-16 object-contain rounded-full shadow-sm border border-slate-100 bg-white p-1">
+        <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-10 object-contain">
       </div>
       <h1 class="text-sm font-bold text-teal-800" id="txtNamaLembaga">LAZMU Masjid Utsman bin Affan</h1>
       <p class="text-[11px] text-gray-500 mt-0.5 font-medium">#Menyalurkan Amanah, Menghadirkan Manfaat</p>
@@ -256,7 +256,6 @@
       initSlider();
     });
 
-    // Fungsi tombol plus minus jumlah jiwa
     function ubahJiwa(nilai) {
       const inputJiwa = document.getElementById("onlineJiwa");
       let currentVal = parseInt(inputJiwa.value, 10) || 1;
@@ -535,7 +534,8 @@
             jenisBayar: isCustom ? "Uang (Custom)" : "Uang (Reguler)",
             hargaSatuan: hargaSatuan,
             totalZakat: totalZakat,
-            infakOpsional: infak,
+            infakBerasKg: 0,
+            infakUangRp: infak,
             totalBayar: totalBayar
           };
 
@@ -563,7 +563,7 @@
       document.getElementById("strukNama").innerText = data.namaMuzakki;
       document.getElementById("strukJiwa").innerText = `${data.jumlahJiwa} Jiwa`;
       document.getElementById("strukZakat").innerText = `Rp ${data.totalZakat.toLocaleString('id-ID')}`;
-      document.getElementById("strukInfak").innerText = `Rp ${data.infakOpsional.toLocaleString('id-ID')}`;
+      document.getElementById("strukInfak").innerText = `Rp ${data.infakUangRp.toLocaleString('id-ID')}`;
       document.getElementById("strukNominal").innerText = `Rp ${data.totalBayar.toLocaleString('id-ID')}`;
 
       const container = document.getElementById("qrisImageContainer");
@@ -711,7 +711,7 @@
         `• *Alamat:* ${currentTransaction.alamat}\n` +
         `• *Jumlah Jiwa:* ${currentTransaction.jumlahJiwa}\n` +
         `• *Zakat Fitrah:* Rp ${currentTransaction.totalZakat.toLocaleString('id-ID')}\n` +
-        `• *Infak/Sedekah:* Rp ${currentTransaction.infakOpsional.toLocaleString('id-ID')}\n` +
+        `• *Infak/Sedekah:* Rp ${currentTransaction.infakUangRp.toLocaleString('id-ID')}\n` +
         `• *Total Bayar:* Rp ${currentTransaction.totalBayar.toLocaleString('id-ID')}\n\n` +
         `_Catatan: Mohon sertakan bukti transfer di pesan WA ini._\n\n` +
         `Jazakumullahu khairan.`;

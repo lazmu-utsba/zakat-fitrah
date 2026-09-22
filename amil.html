@@ -6,7 +6,6 @@
   <title>Dashboard Amil - Zakat Fitrah LAZMU</title>
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1CnBKrSHF_nKrMw1IeM6awuhtOn6TuOAJ">  
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- html2canvas kanggé Download Kuitansi Visual -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     @media print {
@@ -318,10 +317,10 @@
     </div>
   </div>
 
-  <!-- AREA CETAK FISIK (DOBEL: ATAS KUITANSI MUZAKKI + BAWAH ARSIP AMIL) -->
+  <!-- AREA CETAK KUITANSI -->
   <div id="printArea" class="hidden max-w-sm mx-auto bg-white text-slate-800 text-[11px] font-sans space-y-2 border border-slate-400 rounded-lg">
     
-    <!-- BAGIAN ATAS: KUITANSI MUZAKKI (BER-QR & DOA LENGKAP) -->
+    <!-- KUITANSI MUZAKKI -->
     <div class="text-center space-y-1 pb-1.5 border-b border-dashed border-slate-400">
       <div class="flex justify-center">
         <img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo LAZMU" class="h-7 object-contain">
@@ -361,19 +360,19 @@
       </div>
     </div>
 
-    <!-- DOA LENGKAP & PETUGAS AMIL UNTUK MUZAKKI -->
+    <!-- DOA & PETUGAS AMIL UNTUK MUZAKKI -->
     <div class="text-[9px] text-slate-700 bg-slate-50/50 p-1.5 rounded border border-slate-100 text-center space-y-0.5">
       <p class="italic font-medium">"Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura."</p>
       <p class="text-[8px] text-slate-500 leading-tight">(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)</p>
       <p class="text-[8px] text-slate-700 font-semibold pt-0.5 border-t border-slate-200">Petugas Amil: <span id="pAmil" class="font-bold"></span></p>
     </div>
 
-    <!-- GARIS PEMBATAS PUTUS-PUTUS SOBEKAN -->
+    <!-- GARIS PEMBATAS -->
     <div class="text-center text-slate-400 font-mono text-[9px] tracking-widest my-1 select-none">
       ---------------------- (SOBEK DI SINI) ----------------------
     </div>
 
-    <!-- BAGIAN BAWAH: ARSIRAN / CATATAN PETUGAS AMIL -->
+    <!-- ARSIR PETUGAS AMIL -->
     <div class="text-[10px] space-y-0.5 text-slate-700 px-1">
       <div class="text-center font-bold tracking-wider text-slate-500 uppercase text-[9px] border-b border-dotted border-slate-300 pb-0.5 mb-0.5">
         Arsip Rekap Petugas Posko
@@ -986,6 +985,7 @@
       }
 
       let pesan = `Assalamu'alaikum Warahmatullahi Wabarakatuh\n\n` +
+                  `Bapak/Ibu Muzakki yang dirahmati Allah, berikut kami lampirkan kuitansi / bukti penunaian Zakat Fitrah & Infak:\n\n` +
                   `ID Transaksi: *${id}*\n` +
                   `Tanggal: ${tgl}\n\n` +
                   `Nama: *${nama}*\n` +
@@ -997,6 +997,7 @@
                   `Petugas Amil: ${amil}\n\n` +
                   `_“Ajarakallahu fiima a'thaita, wa baaraka fiima abqaita, wa ja'alahu laka thahuura.”_\n` +
                   `(Semoga Allah memberikan pahala atas apa yang engkau berikan, memberikan berkah atas harta yang engkau simpan, dan menjadikannya pembersih bagi jiwamu)\n\n` +
+                  `Terima kasih atas kepercayaan Anda menyalurkan zakat melalui LAZMU. Semoga berkah melimpah untuk keluarga.\n\n` +
                   `Wassalamu'alaikum Warahmatullahi Wabarakatuh\n` +
                   `---\nLembaga Amil Zakat Masjid Utsman bin Affan (LAZMU)`;
 

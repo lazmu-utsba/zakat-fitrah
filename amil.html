@@ -902,7 +902,6 @@
     function cetakStruk(tgl, id, nama, alamat, jiwa, jenis, zakatUang, infakBerasKg, infakUangRp, total, amil) {
       if (amil === "Online / Mandiri" || amil === "-") amil = "Admin Lazmu";
 
-      // 1. ISI BAGIAN ATAS (KUITANSI MUZAKKI)
       document.getElementById("pId").innerText = id;
       document.getElementById("pTgl").innerText = tgl;
       document.getElementById("pNama").innerText = nama;
@@ -914,7 +913,6 @@
 
       renderRincianKuitansi(true, jenis, jiwa, zakatUang, infakBerasKg, infakUangRp, total);
 
-      // 2. ISI BAGIAN BAWAH (ARSIP PETUGAS AMIL)
       document.getElementById("pBackupId").innerText = id;
       document.getElementById("pBackupNama").innerText = nama;
       document.getElementById("pBackupAlamat").innerText = alamat;
@@ -1313,7 +1311,41 @@
       }
     }
 
-    // --- FITUR REKAP & TUTUP BUKU SHIFT (FIXED VERSION) ---
+    // --- FITUR REKAP & TUTUP BUKU SHIFT (HELPER UNIVERSAL) ---
+
+    function sameDate(rawDateStr, pilihTahun, pilihBulan, pilihHari) {
+      if (!rawDateStr) return false;
+      let str = String(rawDateStr).trim();
+      
+      // 1. Format DD-MM-YYYY (misal: "21-09-2026 21:59:34" utawi "22-09-2026 11:10:14")
+      let ddmmyyyy = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+      if (ddmmyyyy) {
+        let d = ddmmyyyy[1].padStart(2, '0');
+        let m = ddmmyyyy[2].padStart(2, '0');
+        let y = ddmmyyyy[3];
+        if (y === pilihTahun && m === pilihBulan && d === pilihHari) return true;
+      }
+      
+      // 2. Format YYYY-MM-DD (misal: "2026-09-21" utawi "2026-09-22T04:10:14.000Z")
+      let yyyymmdd = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      if (yyyymmdd) {
+        let y = yyyymmdd[1];
+        let m = yyyymmdd[2].padStart(2, '0');
+        let d = yyyymmdd[3].padStart(2, '0');
+        if (y === pilihTahun && m === pilihBulan && d === pilihHari) return true;
+      }
+
+      // 3. Fallback menyang JavaScript Date Object
+      let dt = new Date(str);
+      if (!isNaN(dt.getTime())) {
+        let y = String(dt.getFullYear());
+        let m = String(dt.getMonth() + 1).padStart(2, '0');
+        let d = String(dt.getDate()).padStart(2, '0');
+        if (y === pilihTahun && m === pilihBulan && d === pilihHari) return true;
+      }
+
+      return false;
+    }
     
     function bukaModalRekap() {
       const selectAmil = document.getElementById("rekapPetugas");
@@ -1338,22 +1370,22 @@
     }
 
     function hitungRekapShift() {
-      const tglPilih = document.getElementById("rekapTanggal").value; // Format input HTML date: "2026-09-21"
+      const tglPilih = document.getElementById("rekapTanggal").value; // Format input HTML date: "2026-09-22"
       const petugasPilih = document.getElementById("rekapPetugas").value;
       
       if (!tglPilih) return;
       const parts = tglPilih.split("-");
       if (parts.length !== 3) return;
       const [pilihTahun, pilihBulan, pilihHari] = parts;
-      const targetTanggalCari = `${pilihHari}-${pilihBulan}-${pilihTahun}`; // Menjadi "21-09-2026"
 
       let totalTx = 0, totalJiwa = 0, totalZakatUang = 0, totalZakatBeras = 0, totalInfakUang = 0, totalInfakBeras = 0;
 
       semuaTransaksiCache.forEach(row => {
-        let rawDate = String(row[0] || "").trim(); // Kolom A: "21-09-2026 21:59:34"
-        let amil = String(row[12] || "").trim();   // Kolom M: Nama Petugas Amil
+        let rawDate = String(row[0] || "").trim(); // Kolom A: Timestamp
+        let amil = String(row[12] || "").trim();   // Kolom M: Petugas Amil
         
-        let isTanggalCocok = rawDate.includes(targetTanggalCari);
+        // Pencocokan tanggal presisi lewat sameDate()
+        let isTanggalCocok = sameDate(rawDate, pilihTahun, pilihBulan, pilihHari);
         let isAmilCocok = (petugasPilih === "SEMUA" || amil === petugasPilih);
 
         if (isTanggalCocok && isAmilCocok) {

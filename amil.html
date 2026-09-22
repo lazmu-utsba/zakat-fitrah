@@ -10,11 +10,10 @@
   <style>
     @media print {
       @page {
-        margin: 0.2cm; /* Sedikit margin agar tidak terpotong printer */
+        margin: 0.2cm;
         size: auto;
       }
-      /* Sembunyikan SEMUA elemen di dalam body KECUALI printArea */
-      body > :not(#printArea) {
+      body > :not(#printArea):not(#printAreaRekap) {
         display: none !important;
       }
       html, body {
@@ -22,10 +21,9 @@
         margin: 0 !important;
         padding: 0 !important;
         height: auto !important;
-        overflow: hidden !important; /* Kunci supaya mboten mucul blank page ke-2 */
+        overflow: hidden !important; 
       }
-      #printArea {
-        display: block !important;
+      #printArea, #printAreaRekap {
         position: relative !important;
         width: 100% !important;
         box-shadow: none !important;
@@ -81,9 +79,15 @@
           </p>
         </div>
       </div>
-      <button type="button" onclick="location.reload()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold px-3 py-2 rounded-xl transition cursor-pointer">
-        Keluar / Logout
-      </button>
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="bukaModalRekap()" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer flex items-center gap-1">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
+          Rekap / Tutup Buku
+        </button>
+        <button type="button" onclick="location.reload()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold px-3 py-2 rounded-xl transition cursor-pointer">
+          Keluar / Logout
+        </button>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -308,7 +312,6 @@
           class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer flex items-center justify-center gap-1.5">
           Kirim Kuitansi & Teks via WA
         </button>
-        <!-- TAMBAHAN TOMBOL CLOSE / TUTUP POPUP DI BAWAH -->
         <button type="button" onclick="tutupModalKuitansi()" 
           class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer">
           Tutup Menu Kuitansi (Close)
@@ -403,6 +406,95 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- MODAL REKAP & TUTUP BUKU SHIFT -->
+  <div id="modalRekap" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-5 space-y-4 my-auto border border-slate-100">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="text-xs font-bold text-teal-800 uppercase">Rekap & Tutup Buku Shift</h3>
+        <button type="button" onclick="document.getElementById('modalRekap').classList.add('hidden')" class="text-slate-400 hover:text-red-600 font-bold text-sm">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-700 mb-1 uppercase">Pilih Tanggal</label>
+          <input type="date" id="rekapTanggal" class="w-full px-3 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none" onchange="hitungRekapShift()">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-gray-700 mb-1 uppercase">Pilih Petugas Amil</label>
+          <select id="rekapPetugas" class="w-full px-3 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-white" onchange="hitungRekapShift()">
+            <option value="SEMUA">-- SEMUA PETUGAS (TOTAL HARIAN) --</option>
+            <!-- Opsi amil diisi otomatis lewat JS -->
+          </select>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-2">
+        <div class="flex justify-between text-slate-500"><span>Total Transaksi:</span><span id="rkJmlTx" class="font-bold text-slate-800">0</span></div>
+        <div class="flex justify-between text-slate-500"><span>Total Jiwa:</span><span id="rkJiwa" class="font-bold text-slate-800">0 Jiwa</span></div>
+        <div class="border-t border-slate-200 pt-2 flex justify-between text-slate-500"><span>Zakat Uang:</span><span id="rkZakatUang" class="font-bold text-teal-700">Rp 0</span></div>
+        <div class="flex justify-between text-slate-500"><span>Zakat Beras:</span><span id="rkZakatBeras" class="font-bold text-amber-700">0 Kg</span></div>
+        <div class="border-t border-slate-200 pt-2 flex justify-between text-slate-500"><span>Infak Uang:</span><span id="rkInfakUang" class="font-bold text-teal-700">Rp 0</span></div>
+        <div class="flex justify-between text-slate-500"><span>Infak Beras:</span><span id="rkInfakBeras" class="font-bold text-amber-700">0 Kg</span></div>
+        
+        <div class="border-t-2 border-teal-200 pt-2 mt-2 font-bold text-sm text-teal-900 flex justify-between">
+          <span>TOTAL UANG CASH:</span><span id="rkTotalUang">Rp 0</span>
+        </div>
+        <div class="font-bold text-sm text-amber-800 flex justify-between">
+          <span>TOTAL FISIK BERAS:</span><span id="rkTotalBeras">0 Kg</span>
+        </div>
+      </div>
+
+      <button type="button" onclick="cetakStrukRekap()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2">
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-9H7v4h10V3z"/></svg>
+        Cetak Struk Tutup Buku
+      </button>
+    </div>
+  </div>
+
+  <!-- AREA CETAK STRUK REKAP TERSENDIRI -->
+  <div id="printAreaRekap" class="hidden max-w-sm mx-auto bg-white text-slate-800 text-[11px] font-sans space-y-2 border border-slate-400 rounded-lg p-2">
+    <div class="text-center space-y-1 pb-2 border-b border-dashed border-slate-400">
+      <div class="flex justify-center mb-1"><img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo" class="h-6 object-contain"></div>
+      <h2 class="font-bold text-xs">LAPORAN TUTUP BUKU AMIL</h2>
+      <p class="text-[9px] uppercase" id="prTglLaporan">-</p>
+    </div>
+    
+    <div class="space-y-1 px-1 py-1 text-[10px]">
+      <div class="flex justify-between"><span>Petugas Shift:</span> <span class="font-bold uppercase" id="prPetugas">-</span></div>
+      <div class="flex justify-between"><span>Waktu Cetak:</span> <span id="prWaktuCetak">-</span></div>
+    </div>
+
+    <div class="border-t border-b border-slate-300 py-1.5 px-1 space-y-1 text-[10px]">
+      <div class="flex justify-between"><span>Total Transaksi:</span> <span class="font-bold" id="prJmlTx">0</span></div>
+      <div class="flex justify-between"><span>Total Jiwa Zakat:</span> <span class="font-bold" id="prJiwa">0 Jiwa</span></div>
+      
+      <div class="pt-1 mt-1 border-t border-slate-200 border-dashed"></div>
+      <div class="flex justify-between"><span>Penerimaan Zakat Uang:</span> <span id="prZakatUang">Rp 0</span></div>
+      <div class="flex justify-between"><span>Penerimaan Zakat Beras:</span> <span id="prZakatBeras">0 Kg</span></div>
+      
+      <div class="pt-1 mt-1 border-t border-slate-200 border-dashed"></div>
+      <div class="flex justify-between"><span>Penerimaan Infak Uang:</span> <span id="prInfakUang">Rp 0</span></div>
+      <div class="flex justify-between"><span>Penerimaan Infak Beras:</span> <span id="prInfakBeras">0 Kg</span></div>
+    </div>
+
+    <div class="bg-slate-100 p-1.5 rounded space-y-1">
+      <div class="flex justify-between font-bold text-xs">
+        <span>TOTAL UANG CASH:</span> <span id="prTotalUang">Rp 0</span>
+      </div>
+      <div class="flex justify-between font-bold text-xs">
+        <span>TOTAL FISIK BERAS:</span> <span id="prTotalBeras">0 Kg</span>
+      </div>
+    </div>
+
+    <div class="text-center pt-4 pb-2 space-y-6">
+      <p class="text-[9px]">Tanda Tangan Penyerahan</p>
+      <div class="flex justify-between px-4 text-[9px] font-bold">
+        <span>( Petugas Amil )</span>
+        <span>( Bendahara / DKM )</span>
+      </div>
+    </div>
   </div>
 
   <!-- POP-UP ALERT -->
@@ -733,7 +825,6 @@
       if (jenis.includes("Beras")) {
         if (rowZakat) rowZakat.style.display = "none";
         
-        // Tampilkan Infak Beras jika > 0
         if (nBeras > 0) {
           if (rowInfakBeras) {
             rowInfakBeras.style.display = "flex";
@@ -743,7 +834,6 @@
           if (rowInfakBeras) rowInfakBeras.style.display = "none";
         }
 
-        // Tampilkan Infak Uang jika > 0
         if (nUang > 0) {
           if (rowInfakUang) {
             rowInfakUang.style.display = "flex";
@@ -887,13 +977,11 @@
       const printAreaEl = document.getElementById("printArea");
       printAreaEl.classList.remove("hidden");
 
-      // Fungsi eksekusi cetak
       const triggerPrint = () => {
         window.print();
         printAreaEl.classList.add("hidden");
       };
 
-      // Pastikan QR Code benar-benar selesai di-load sebelum window.print() dipanggil
       qrImg.onload = function() {
         setTimeout(triggerPrint, 150);
       };
@@ -1223,6 +1311,114 @@
         btn.disabled = false;
         btn.innerText = "Update Transaksi";
       }
+    }
+
+    // --- FITUR REKAP & TUTUP BUKU SHIFT ---
+    
+    function bukaModalRekap() {
+      const selectAmil = document.getElementById("rekapPetugas");
+      const listAmilAsli = document.getElementById("inputPetugasAmil").options;
+      
+      selectAmil.innerHTML = '<option value="SEMUA">-- SEMUA PETUGAS (TOTAL HARIAN) --</option>';
+      for (let i = 0; i < listAmilAsli.length; i++) {
+        const opt = document.createElement("option");
+        opt.value = listAmilAsli[i].value;
+        opt.innerText = listAmilAsli[i].text;
+        selectAmil.appendChild(opt);
+      }
+      
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById("rekapTanggal").value = `${yyyy}-${mm}-${dd}`;
+      
+      hitungRekapShift();
+      document.getElementById("modalRekap").classList.remove("hidden");
+    }
+
+    function hitungRekapShift() {
+      const tglPilih = document.getElementById("rekapTanggal").value; 
+      const petugasPilih = document.getElementById("rekapPetugas").value;
+      
+      if (!tglPilih) return;
+      const [year, month, day] = tglPilih.split("-");
+      const targetDateStr = `${day}-${month}-${year}`; 
+
+      let totalTx = 0, totalJiwa = 0, totalZakatUang = 0, totalZakatBeras = 0, totalInfakUang = 0, totalInfakBeras = 0;
+
+      semuaTransaksiCache.forEach(row => {
+        let rawDate = row[0] || ""; 
+        let amil = String(row[12] || "").trim();
+        
+        if (rawDate.includes(targetDateStr)) {
+          if (petugasPilih === "SEMUA" || amil === petugasPilih) {
+            totalTx++;
+            const jiwa = parseInt(row[5]) || 0;
+            const jenis = String(row[6] || "");
+            const zakatUang = parseInt(row[8]) || 0;
+            const infakBeras = parseFloat(row[9]) || 0;
+            const infakUang = parseInt(row[10]) || 0;
+
+            totalJiwa += jiwa;
+            totalInfakBeras += infakBeras;
+            totalInfakUang += infakUang;
+
+            if (jenis.includes("Beras")) {
+              totalZakatBeras += (jiwa * 2.5);
+            } else {
+              totalZakatUang += zakatUang;
+            }
+          }
+        }
+      });
+
+      const grandTotalUang = totalZakatUang + totalInfakUang;
+      const grandTotalBeras = totalZakatBeras + totalInfakBeras;
+
+      document.getElementById("rkJmlTx").innerText = totalTx;
+      document.getElementById("rkJiwa").innerText = totalJiwa + " Jiwa";
+      document.getElementById("rkZakatUang").innerText = "Rp " + totalZakatUang.toLocaleString('id-ID');
+      document.getElementById("rkZakatBeras").innerText = totalZakatBeras + " Kg";
+      document.getElementById("rkInfakUang").innerText = "Rp " + totalInfakUang.toLocaleString('id-ID');
+      document.getElementById("rkInfakBeras").innerText = totalInfakBeras + " Kg";
+      
+      document.getElementById("rkTotalUang").innerText = "Rp " + grandTotalUang.toLocaleString('id-ID');
+      document.getElementById("rkTotalBeras").innerText = grandTotalBeras + " Kg";
+    }
+
+    function cetakStrukRekap() {
+      const tglPilih = document.getElementById("rekapTanggal").value;
+      const petugasPilih = document.getElementById("rekapPetugas");
+      const namaPetugas = petugasPilih.options[petugasPilih.selectedIndex].text;
+      
+      document.getElementById("prTglLaporan").innerText = "Tanggal: " + tglPilih;
+      document.getElementById("prPetugas").innerText = namaPetugas;
+      
+      const now = new Date();
+      document.getElementById("prWaktuCetak").innerText = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+
+      document.getElementById("prJmlTx").innerText = document.getElementById("rkJmlTx").innerText;
+      document.getElementById("prJiwa").innerText = document.getElementById("rkJiwa").innerText;
+      document.getElementById("prZakatUang").innerText = document.getElementById("rkZakatUang").innerText;
+      document.getElementById("prZakatBeras").innerText = document.getElementById("rkZakatBeras").innerText;
+      document.getElementById("prInfakUang").innerText = document.getElementById("rkInfakUang").innerText;
+      document.getElementById("prInfakBeras").innerText = document.getElementById("rkInfakBeras").innerText;
+      document.getElementById("prTotalUang").innerText = document.getElementById("rkTotalUang").innerText;
+      document.getElementById("prTotalBeras").innerText = document.getElementById("rkTotalBeras").innerText;
+
+      const elPrintRekap = document.getElementById("printAreaRekap");
+      const styleTag = document.createElement("style");
+      styleTag.innerHTML = "@media print { body > :not(#printAreaRekap) { display: none !important; } #printAreaRekap { display: block !important; } }";
+      document.head.appendChild(styleTag);
+
+      elPrintRekap.classList.remove("hidden");
+      
+      setTimeout(() => {
+        window.print();
+        elPrintRekap.classList.add("hidden");
+        document.head.removeChild(styleTag);
+      }, 300);
     }
   </script>
 </body>

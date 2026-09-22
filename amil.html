@@ -63,7 +63,7 @@
     </div>
   </div>
 
-  <!-- DASHBOARD -->
+  <!-- DASHBOARD AMIL -->
   <div id="dashboardAmil" class="hidden max-w-6xl mx-auto mt-4 p-4 space-y-4">
     
     <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
@@ -92,7 +92,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       
-      <!-- FORM POSKO -->
+      <!-- FORM INPUT / EDIT POSKO -->
       <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 md:col-span-1 space-y-3">
         <div class="flex justify-between items-center border-b pb-2">
           <h2 id="formTitle" class="text-xs font-bold text-teal-800 uppercase">Input Zakat Offline (Posko)</h2>
@@ -219,7 +219,7 @@
     </div>
   </div>
 
-  <!-- POP-UP MODAL KUITANSI DIGITAL -->
+  <!-- POP-UP KUITANSI DIGITAL -->
   <div id="modalKuitansiVisual" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 my-auto border border-slate-100">
       <div class="flex justify-between items-center border-b pb-2">
@@ -446,7 +446,7 @@
         </div>
       </div>
 
-      <!-- TOMBOL AKSI REKAP LENGKAP -->
+      <!-- TOMBOL REKAP -->
       <div class="space-y-2 pt-1">
         <button type="button" onclick="cetakStrukRekap()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2">
           <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-9H7v4h10V3z"/></svg>
@@ -463,7 +463,7 @@
     </div>
   </div>
 
-  <!-- AREA CETAK STRUK REKAP TERSENDIRI -->
+  <!-- AREA CETAK STRUK REKAP -->
   <div id="printAreaRekap" class="hidden max-w-sm mx-auto bg-white text-slate-800 text-[11px] font-sans space-y-2 border border-slate-400 rounded-lg p-2">
     <div class="text-center space-y-1 pb-2 border-b border-dashed border-slate-400">
       <div class="flex justify-center mb-1"><img src="https://lh3.googleusercontent.com/d/1Ui5zq1dAYVPQ_X9BPVxcMBEND_eCyPcF" alt="Logo" class="h-6 object-contain"></div>
@@ -1321,7 +1321,7 @@
       }
     }
 
-    // --- FITUR REKAP & TUTUP BUKU SHIFT (HELPER UNIVERSAL + KIRIM WA ADMIN) ---
+    // --- FITUR REKAP & TUTUP BUKU SHIFT (LANGSUNG READ NO_WA_ADMIN DARI SHEET) ---
 
     function sameDate(rawDateStr, pilihTahun, pilihBulan, pilihHari) {
       if (!rawDateStr) return false;
@@ -1476,10 +1476,14 @@
       const totalUang = document.getElementById("rkTotalUang").innerText;
       const totalBeras = document.getElementById("rkTotalBeras").innerText;
 
-      let noWa = prompt("Masukkan No. WhatsApp Admin / Bendahara DKM (Contoh: 08123456789):");
-      if (!noWa) return;
+      // Njupuk langsung saking key NO_WA_ADMIN ing Sheet Pengaturan
+      let noWa = globalConfig.NO_WA_ADMIN || "";
+      if (!noWa) {
+        noWa = prompt("Key NO_WA_ADMIN ora ketemu ing Sheet Pengaturan. Masukkan No. WhatsApp Admin secara manual:");
+        if (!noWa) return;
+      }
 
-      let formatNo = noWa.replace(/[^0-9]/g, '');
+      let formatNo = String(noWa).replace(/[^0-9]/g, '');
       if (formatNo.startsWith('0')) {
         formatNo = '62' + formatNo.substring(1);
       }

@@ -1338,19 +1338,20 @@
     }
 
     function hitungRekapShift() {
-      const tglPilih = document.getElementById("rekapTanggal").value; 
+      const tglPilih = document.getElementById("rekapTanggal").value; // Format dari input date HTML: "2026-09-21"
       const petugasPilih = document.getElementById("rekapPetugas").value;
       
       if (!tglPilih) return;
       const [year, month, day] = tglPilih.split("-");
-      const targetDateStr = `${day}-${month}-${year}`; 
+      const targetDateStr = `${day}-${month}-${year}`; // Hasil: "21-09-2026" (cocok persis karo format Sheets)
 
       let totalTx = 0, totalJiwa = 0, totalZakatUang = 0, totalZakatBeras = 0, totalInfakUang = 0, totalInfakBeras = 0;
 
       semuaTransaksiCache.forEach(row => {
-        let rawDate = row[0] || ""; 
-        let amil = String(row[12] || "").trim();
+        let rawDate = String(row[0] || ""); // Kolom A: Waktu / Tanggal
+        let amil = String(row[12] || "").trim(); // Kolom M: Petugas Amil
         
+        // Cek apakah tanggal di data mengandung target tanggal (mengabaikan jam jika ada)
         if (rawDate.includes(targetDateStr)) {
           if (petugasPilih === "SEMUA" || amil === petugasPilih) {
             totalTx++;

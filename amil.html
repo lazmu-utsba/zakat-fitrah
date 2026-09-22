@@ -1321,7 +1321,7 @@
       }
     }
 
-    // --- FITUR REKAP & TUTUP BUKU SHIFT (LANGSUNG READ NO_WA_ADMIN DARI SHEET) ---
+    // --- FITUR REKAP & TUTUP BUKU SHIFT ---
 
     function sameDate(rawDateStr, pilihTahun, pilihBulan, pilihHari) {
       if (!rawDateStr) return false;
@@ -1476,12 +1476,7 @@
       const totalUang = document.getElementById("rkTotalUang").innerText;
       const totalBeras = document.getElementById("rkTotalBeras").innerText;
 
-      // Njupuk langsung saking key NO_WA_ADMIN ing Sheet Pengaturan
-      let noWa = globalConfig.NO_WA_ADMIN || "";
-      if (!noWa) {
-        noWa = prompt("Key NO_WA_ADMIN ora ketemu ing Sheet Pengaturan. Masukkan No. WhatsApp Admin secara manual:");
-        if (!noWa) return;
-      }
+      let noWa = globalConfig.NO_WA_ADMIN || "628131626940";
 
       let formatNo = String(noWa).replace(/[^0-9]/g, '');
       if (formatNo.startsWith('0')) {

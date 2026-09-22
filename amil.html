@@ -1313,7 +1313,7 @@
       }
     }
 
-    // --- FITUR REKAP & TUTUP BUKU SHIFT ---
+    // --- FITUR REKAP & TUTUP BUKU SHIFT (FIXED VERSION) ---
     
     function bukaModalRekap() {
       const selectAmil = document.getElementById("rekapPetugas");
@@ -1338,38 +1338,40 @@
     }
 
     function hitungRekapShift() {
-      const tglPilih = document.getElementById("rekapTanggal").value; // Format dari input date HTML: "2026-09-21"
+      const tglPilih = document.getElementById("rekapTanggal").value; // Format input HTML date: "2026-09-21"
       const petugasPilih = document.getElementById("rekapPetugas").value;
       
       if (!tglPilih) return;
-      const [year, month, day] = tglPilih.split("-");
-      const targetDateStr = `${day}-${month}-${year}`; // Hasil: "21-09-2026" (cocok persis karo format Sheets)
+      const parts = tglPilih.split("-");
+      if (parts.length !== 3) return;
+      const [pilihTahun, pilihBulan, pilihHari] = parts;
+      const targetTanggalCari = `${pilihHari}-${pilihBulan}-${pilihTahun}`; // Menjadi "21-09-2026"
 
       let totalTx = 0, totalJiwa = 0, totalZakatUang = 0, totalZakatBeras = 0, totalInfakUang = 0, totalInfakBeras = 0;
 
       semuaTransaksiCache.forEach(row => {
-        let rawDate = String(row[0] || ""); // Kolom A: Waktu / Tanggal
-        let amil = String(row[12] || "").trim(); // Kolom M: Petugas Amil
+        let rawDate = String(row[0] || "").trim(); // Kolom A: "21-09-2026 21:59:34"
+        let amil = String(row[12] || "").trim();   // Kolom M: Nama Petugas Amil
         
-        // Cek apakah tanggal di data mengandung target tanggal (mengabaikan jam jika ada)
-        if (rawDate.includes(targetDateStr)) {
-          if (petugasPilih === "SEMUA" || amil === petugasPilih) {
-            totalTx++;
-            const jiwa = parseInt(row[5]) || 0;
-            const jenis = String(row[6] || "");
-            const zakatUang = parseInt(row[8]) || 0;
-            const infakBeras = parseFloat(row[9]) || 0;
-            const infakUang = parseInt(row[10]) || 0;
+        let isTanggalCocok = rawDate.includes(targetTanggalCari);
+        let isAmilCocok = (petugasPilih === "SEMUA" || amil === petugasPilih);
 
-            totalJiwa += jiwa;
-            totalInfakBeras += infakBeras;
-            totalInfakUang += infakUang;
+        if (isTanggalCocok && isAmilCocok) {
+          totalTx++;
+          const jiwa = parseInt(row[5], 10) || 0;
+          const jenis = String(row[6] || "");
+          const zakatUang = parseInt(row[8], 10) || 0;
+          const infakBeras = parseFloat(row[9]) || 0;
+          const infakUang = parseInt(row[10], 10) || 0;
 
-            if (jenis.includes("Beras")) {
-              totalZakatBeras += (jiwa * 2.5);
-            } else {
-              totalZakatUang += zakatUang;
-            }
+          totalJiwa += jiwa;
+          totalInfakBeras += infakBeras;
+          totalInfakUang += infakUang;
+
+          if (jenis.includes("Beras")) {
+            totalZakatBeras += (jiwa * 2.5);
+          } else {
+            totalZakatUang += zakatUang;
           }
         }
       });

@@ -190,9 +190,14 @@
           </div>
         </div>
 
-        <div class="flex gap-2">
-          <input type="text" id="searchKeyword" placeholder="Cari nama muzakki / ID transaksi..." oninput="filterTabelTransaksi()"
-            class="w-full px-3 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+        <!-- KOLOM PENCARIAN DENGAN ICON CLEAR (X) -->
+        <div class="relative w-full">
+          <input type="text" id="searchKeyword" placeholder="Cari nama muzakki / ID transaksi..." oninput="toggleBtnClearSearch(); filterTabelTransaksi();"
+            class="w-full pl-3 pr-8 py-2 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+          <button type="button" id="btnClearSearch" onclick="clearSearchInput()" 
+            class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 font-bold text-xs p-0.5 rounded-full transition cursor-pointer" title="Bersihkan Pencarian">
+            ✕
+          </button>
         </div>
 
         <div class="overflow-x-auto border border-slate-200 rounded-xl max-h-96">
@@ -1169,6 +1174,25 @@
       document.getElementById("statTotalUang").innerText = `Rp ${uang.toLocaleString('id-ID')}`;
       document.getElementById("statTotalBeras").innerText = `${beras} Kg`;
       document.getElementById("statTotalInfak").innerText = `Rp ${infakUang.toLocaleString('id-ID')}`;
+    }
+
+    // FUNGSI UNTUK MENGONTROL TOMBOL CLEAR (X) PADA PENCARIAN
+    function toggleBtnClearSearch() {
+      const kw = document.getElementById("searchKeyword").value;
+      const btn = document.getElementById("btnClearSearch");
+      if (kw.trim().length > 0) {
+        btn.classList.remove("hidden");
+      } else {
+        btn.classList.add("hidden");
+      }
+    }
+
+    function clearSearchInput() {
+      const input = document.getElementById("searchKeyword");
+      input.value = "";
+      toggleBtnClearSearch();
+      filterTabelTransaksi();
+      input.focus();
     }
 
     function filterTabelTransaksi() {

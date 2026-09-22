@@ -297,7 +297,7 @@
 
       </div>
 
-      <!-- Tombol Aksi Kuitansi Visual -->
+      <!-- Tombol Aksi Kuitansi -->
       <div class="space-y-2 pt-1">
         <button type="button" onclick="downloadGambarKuitansi()" 
           class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer flex items-center justify-center gap-1.5">
@@ -739,11 +739,11 @@
         const infakBerasKg = parseFloat(row[9]) || 0;
         const infakUangRp = parseInt(row[10], 10) || 0;
         const totalBayar = parseInt(row[11], 10) || 0;
-        let amil = row[12] || "-";
+        const rawAmil = String(row[12] || "").trim();
 
-        if (amil === "Online / Mandiri" || amil === "-") {
-          amil = "Admin Lazmu";
-        }
+        // DETEKSI APAKAH TRANSAKSI ONLINE ATAU OFFLINE POSKO
+        const isOnline = (rawAmil === "Online / Mandiri" || rawAmil === "" || rawAmil === "-" || rawAmil === "Online");
+        const amilDisplay = isOnline ? "Online / Mandiri" : rawAmil;
 
         totalJiwaAll += jiwa;
         totalInfakBerasAll += infakBerasKg;
@@ -780,6 +780,17 @@
           `;
         }
 
+        // TOMBOL EDIT HANYA DITAMPILKAN NALIKA TRANSAKSI OFFLINE
+        let tombolEditHtml = "";
+        if (!isOnline) {
+          tombolEditHtml = `
+            <button type="button" onclick="siapkanEditTransaksi('${idTx}', '${nama}', '${alamat}', '${noWa}', ${jiwa}, '${jenis}', ${hargaSatuan}, ${infakBerasKg}, ${infakUangRp}, '${amilDisplay}')" 
+              class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Edit">
+              Edit
+            </button>
+          `;
+        }
+
         const tr = document.createElement("tr");
         tr.className = "hover:bg-slate-50 transition align-top";
         tr.innerHTML = `
@@ -796,17 +807,14 @@
           <td class="p-2.5 border-b border-slate-100">
             ${infoBayarHtml}
           </td>
-          <td class="p-2.5 border-b border-slate-100 text-slate-600 font-medium whitespace-nowrap">${amil}</td>
+          <td class="p-2.5 border-b border-slate-100 text-slate-600 font-medium whitespace-nowrap">${amilDisplay}</td>
           <td class="p-2.5 border-b border-slate-100 text-center space-x-1 whitespace-nowrap">
-            <button type="button" onclick="siapkanEditTransaksi('${idTx}', '${nama}', '${alamat}', '${noWa}', ${jiwa}, '${jenis}', ${hargaSatuan}, ${infakBerasKg}, ${infakUangRp}, '${amil}')" 
-              class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Edit">
-              Edit
-            </button>
-            <button type="button" onclick="bukaModalKuitansiVisual('${formattedDate}', '${idTx}', '${nama}', '${alamat}', '${noWa}', ${jiwa}, '${jenis}', ${zakatUang}, ${infakBerasKg}, ${infakUangRp}, ${totalBayar}, '${amil}')" 
+            ${tombolEditHtml}
+            <button type="button" onclick="bukaModalKuitansiVisual('${formattedDate}', '${idTx}', '${nama}', '${alamat}', '${noWa}', ${jiwa}, '${jenis}', ${zakatUang}, ${infakBerasKg}, ${infakUangRp}, ${totalBayar}, '${amilDisplay}')" 
               class="bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Kuitansi Digital">
               Kuitansi
             </button>
-            <button type="button" onclick="cetakStruk('${formattedDate}', '${idTx}', '${nama}', '${alamat}', ${jiwa}, '${jenis}', ${zakatUang}, ${infakBerasKg}, ${infakUangRp}, ${totalBayar}, '${amil}')" 
+            <button type="button" onclick="cetakStruk('${formattedDate}', '${idTx}', '${nama}', '${alamat}', ${jiwa}, '${jenis}', ${zakatUang}, ${infakBerasKg}, ${infakUangRp}, ${totalBayar}, '${amilDisplay}')" 
               class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer" title="Cetak Struk Fisik">
               Cetak
             </button>
@@ -1102,6 +1110,12 @@
     }
 
     function siapkanEditTransaksi(id, nama, alamat, noWa, jiwa, jenis, hargaSatuan, infakBerasKg, infakUangRp, amil) {
+      // PROTEKSI SISTEM: MENOLAK PROSES EDIT TRANSAKSI ONLINE
+      if (amil === "Online / Mandiri" || amil === "Admin Lazmu" || amil === "-" || amil === "") {
+        tampilkanAlert("Transaksi Online / Mandiri tidak dapat diedit di menu Posko Amil!");
+        return;
+      }
+
       document.getElementById("editIdTransaksi").value = id;
       document.getElementById("offlineNama").value = nama;
       document.getElementById("offlineAlamat").value = alamat;

@@ -51,8 +51,15 @@
 
       <div class="text-left space-y-1">
         <label class="block text-xs font-semibold text-slate-700">Password Amil</label>
-        <input type="password" id="inputPasswordAmil" placeholder="Masukkan password..." 
-          class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+        <div class="relative">
+          <input type="password" id="inputPasswordAmil" placeholder="Masukkan password..." 
+            class="w-full pl-3.5 pr-10 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none">
+          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-teal-700 cursor-pointer" title="Tampilkan/Sembunyikan Password">
+            <svg id="eyeIcon" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <button type="button" onclick="prosesLoginAmil()" id="btnLoginAmil"
@@ -530,6 +537,15 @@
     let globalConfig = {};
     let semuaTransaksiCache = [];
     let currentModalData = {};
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById("inputPasswordAmil");
+      if (input.type === "password") {
+        input.type = "text";
+      } else {
+        input.type = "password";
+      }
+    }
 
     async function prosesLoginAmil() {
       const pass = document.getElementById("inputPasswordAmil").value.trim();

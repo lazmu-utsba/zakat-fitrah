@@ -705,7 +705,8 @@
         const dataTrans = await resTrans.json();
         if (dataTrans.status === "success") {
           semuaTransaksiCache = dataTrans.data || [];
-          renderTabelDanStatistik(semuaTransaksiCache);
+      // filterTabelTransaksi() agar pencarian tidak ter-reset saat auto-sync
+          filterTabelTransaksi();
         }
       } catch (e) {
         console.error("Gagal auto-sync data dashboard", e);
